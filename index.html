@@ -116,7 +116,8 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <p role="alert" style="margin: 0; padding: 10px 12px; border-radius: 10px; background: #FEF3F2; border: 1px solid #FECDCA; color: #912018; font-size: 14px">{{loginErr}}</p>
 </sc-if>
 <button type="button" onClick="{{signIn}}" style="height: 52px; border-radius: 12px; border: 0; background: #0A6E8C; color: #FFFFFF; font-weight: 700; font-size: 16px; cursor: pointer">Sign in</button>
-<p style="margin: 0; font-size: 13px; color: #475569; text-align: center">or sign in with your district Google / Microsoft account</p>
+<button type="button" onClick="{{signInGoogle}}" style="display: flex; align-items: center; justify-content: center; gap: 10px; height: 52px; border-radius: 12px; border: 1.5px solid #CBD5E1; background: #FFFFFF; color: #0F172A; font-weight: 700; font-size: 15px; cursor: pointer"><span aria-hidden="true" style="width: 24px; height: 24px; border-radius: 999px; background: #F1F5F9; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #1D3F8A">G</span>Continue with Google (district account)</button>
+<p style="margin: 0; font-size: 12px; color: #475569; text-align: center">Every action is recorded with the user's name and a timestamp.</p>
 <div style="border: 1px dashed #94A3B8; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 8px; background: #F8FAFC">
 <span style="font-size: 12px; font-weight: 700; color: #475569; letter-spacing: 0.06em; text-transform: uppercase">Sample accounts for the demo · tap to fill</span>
 <sc-for list="{{sampleAccts}}" as="a" hint-placeholder-count="3">
@@ -144,7 +145,7 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 </sc-for>
 </div>
 <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px">
-<li style="font-size: 15px; line-height: 1.5; color: #E2E8F0">Teachers tap each child's breakfast, lunch, snack or dinner — the screen switches by time of day.</li>
+<li style="font-size: 15px; line-height: 1.5; color: #E2E8F0">By 9:00 AM teachers check off breakfast and sign each child up for lunch, the after-school snack and the Supper Program.</li>
 <li style="font-size: 15px; line-height: 1.5; color: #E2E8F0">Submit with a typed digital signature — the attestation goes straight to Food Service.</li>
 <li style="font-size: 15px; line-height: 1.5; color: #E2E8F0">Room and school master reports are emailed and saved for charts by day, week and month.</li>
 </ul>
@@ -214,6 +215,9 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <sc-if value="{{isTeacher}}" hint-placeholder-val="{{ true }}">
 <span style="display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; border: 1px solid #E2E8F0; border-radius: 999px; font-size: 13px; font-weight: 600">{{tSchoolFull}} · {{tRoom}}</span>
 </sc-if>
+<sc-if value="{{isStaffView}}" hint-placeholder-val="{{ false }}">
+<span style="display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; border: 1px solid #E2E8F0; border-radius: 999px; font-size: 13px; font-weight: 600">{{staffScope}}</span>
+</sc-if>
 <button type="button" onClick="{{switchRole}}" style="height: 40px; padding: 0 14px; border-radius: 10px; border: 1px dashed #94A3B8; background: #FFFFFF; color: #334155; font-size: 13px; font-weight: 600; cursor: pointer">Demo: switch to {{otherRole}}</button>
 <div style="display: flex; align-items: center; gap: 10px">
 <div aria-hidden="true" style="width: 38px; height: 38px; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: #FFFFFF; {{userAvatarStyle}}">{{userInitials}}</div>
@@ -244,8 +248,8 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <span style="font-size: 14px; color: #475569">{{tGrade}} · {{rTotal}} students · Signed in as {{userName}}, so only your classroom is shown. Tap a photo to open a profile.</span>
 <sc-if value="{{isGSRP}}" hint-placeholder-val="{{ false }}">
 <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px; padding: 10px 12px; border-radius: 10px; background: #FFF4E5; border: 1px solid #FBD38D; color: #7A3E00; font-size: 13px">
-<strong>GSRP pre-K room · breakfast and lunch only.</strong>
-<span>No meal choices: every child marked present is served breakfast and lunch. Counts are reported separately from K–5.</span>
+<strong>GSRP pre-K room · breakfast, lunch and supper served family style in the classroom.</strong>
+<span>Take attendance morning and afternoon, check off each meal served, and sign the weekly MDE 5-day sheet. Reported separately from K–5.</span>
 </div>
 </sc-if>
 </div>
@@ -291,6 +295,7 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 </div>
 </sc-if>
 
+<sc-if value="{{notGSRP}}" hint-placeholder-val="{{ true }}">
 <section aria-label="Students" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px">
 <sc-for list="{{cards}}" as="s" hint-placeholder-count="12">
 <article style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px; {{s.cardStyle}}">
@@ -361,6 +366,116 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 </article>
 </sc-for>
 </section>
+</sc-if>
+<sc-if value="{{isGSRP}}" hint-placeholder-val="{{ false }}">
+<section aria-label="GSRP classroom" style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px">
+<div role="group" aria-label="GSRP view" style="display: flex; background: #F1F5F9; border-radius: 12px; padding: 4px; gap: 4px">
+<sc-for list="{{gTabs}}" as="t" hint-placeholder-count="2">
+<button type="button" aria-pressed="{{t.on}}" onClick="{{t.pick}}" style="height: 40px; padding: 0 14px; border-radius: 9px; border: 0; font-size: 14px; font-weight: 600; cursor: pointer; {{t.style}}">{{t.label}}</button>
+</sc-for>
+</div>
+<span style="font-size: 13px; color: #7A3E00; background: #FFF4E5; border: 1px solid #FBD38D; padding: 6px 10px; border-radius: 8px">Family style · at least 3 of the 5 meal components · skim white milk only</span>
+</div>
+<sc-if value="{{gTabToday}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button type="button" onClick="{{checkAllBreakfast}}" style="height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid #CBD5E1; background: #FFFFFF; color: #0F172A; font-weight: 600; font-size: 13px; cursor: pointer">Check off breakfast for everyone present</button>
+</div>
+<div style="overflow-x: auto; border: 1px solid #E2E8F0; border-radius: 12px">
+<table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 820px">
+<thead><tr style="background: #F8FAFC; text-align: left">
+<th scope="col" style="padding: 10px 12px; font-size: 12px; color: #475569">Student</th>
+<th scope="col" style="padding: 10px 12px; font-size: 12px; color: #475569">Morning attendance</th>
+<th scope="col" style="padding: 10px 12px; font-size: 12px; color: #475569">Breakfast</th>
+<th scope="col" style="padding: 10px 12px; font-size: 12px; color: #475569">Lunch</th>
+<th scope="col" style="padding: 10px 12px; font-size: 12px; color: #475569">Supper</th>
+<th scope="col" style="padding: 10px 12px; font-size: 12px; color: #475569">Afternoon attendance</th>
+</tr></thead>
+<tbody>
+<sc-for list="{{cards}}" as="s" hint-placeholder-count="3">
+<tr style="border-top: 1px solid #EEF2F6">
+<td style="padding: 10px 12px">
+<div style="display: flex; align-items: center; gap: 10px">
+<button type="button" onClick="{{s.open}}" aria-label="Open profile for {{s.name}}" style="padding: 0; border: 0; background: none; cursor: pointer; border-radius: 999px; flex: none">
+<span class="{{s.photo}}" aria-hidden="true" style="display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: #334155; width: 40px; height: 40px; border-radius: 999px; {{s.photoStyle}}; {{s.photoBg}}">{{s.ini}}</span>
+</button>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-weight: 700">{{s.name}}</span>
+<sc-if value="{{s.hasAlert}}" hint-placeholder-val="{{ false }}"><span style="font-size: 11px; font-weight: 700; color: #7A3E00">{{s.alert}}</span></sc-if>
+</div>
+</div>
+</td>
+<td style="padding: 10px 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px">
+<button type="button" onClick="{{s.amToggle}}" disabled="{{s.amDisabled}}" style="min-height: 38px; padding: 0 12px; border-radius: 10px; border: 1.5px solid; font-size: 13px; font-weight: 700; cursor: pointer; {{s.amStyle}}">{{s.amLabel}}</button>
+<sc-if value="{{s.canMarkLate}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{s.markLate}}" style="min-height: 38px; padding: 0 10px; border-radius: 10px; border: 1.5px solid #7A3E00; background: #FFFFFF; color: #7A3E00; font-size: 12px; font-weight: 700; cursor: pointer">Arrived late</button>
+</sc-if>
+<sc-if value="{{s.canUndoLate}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{s.undoLate}}" style="border: 0; background: none; color: #7A3E00; font-size: 12px; text-decoration: underline; cursor: pointer; padding: 4px">Undo</button>
+</sc-if>
+</div>
+</td>
+<sc-for list="{{s.gChecks}}" as="c" hint-placeholder-count="3">
+<td style="padding: 10px 12px"><button type="button" aria-pressed="{{c.on}}" aria-label="{{c.label}} served to {{s.name}}" onClick="{{c.toggle}}" disabled="{{c.disabled}}" style="min-height: 38px; min-width: 96px; padding: 0 10px; border-radius: 10px; border: 1.5px solid; font-size: 13px; font-weight: 700; cursor: pointer; {{c.style}}">{{c.text}}</button></td>
+</sc-for>
+<td style="padding: 10px 12px"><button type="button" onClick="{{s.pmToggle}}" style="min-height: 38px; padding: 0 12px; border-radius: 10px; border: 1.5px solid; font-size: 13px; font-weight: 700; cursor: pointer; {{s.pmStyle}}">{{s.pmLabel}}</button></td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+<p style="margin: 0; font-size: 13px; color: #475569; line-height: 1.5">Morning attendance goes to the kitchen by 9:00 AM. Check a meal once the child has been served at least 3 of the 5 components, including skim white milk; checks fill in the weekly MDE sheet. Take afternoon attendance before dismissal.</p>
+</div>
+</sc-if>
+<sc-if value="{{gTabWeek}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 10px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-weight: 700; font-size: 16px">MDE 5-day meal check-off sheet · {{tRoom}}</span>
+<span style="font-size: 13px; color: #475569">Week of {{weekRange}} · B = breakfast, L = lunch, S = supper · ✓ served, — absent</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button type="button" onClick="{{printWeek}}" style="height: 42px; padding: 0 14px; border-radius: 10px; border: 1px solid #CBD5E1; background: #FFFFFF; color: #0F172A; font-weight: 600; font-size: 13px; cursor: pointer">Print sheet</button>
+<sc-if value="{{weekNotSigned}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{openWeek}}" style="height: 42px; padding: 0 16px; border-radius: 10px; border: 0; background: #0A6E8C; color: #FFFFFF; font-weight: 700; font-size: 13px; cursor: pointer">Sign &amp; date this week's sheet</button>
+</sc-if>
+</div>
+</div>
+<div style="overflow-x: auto; border: 1px solid #E2E8F0; border-radius: 12px">
+<table style="width: 100%; border-collapse: collapse; font-size: 13px; min-width: 860px; text-align: center">
+<thead>
+<tr style="background: #F8FAFC">
+<th scope="col" rowspan="2" style="padding: 8px 12px; font-size: 12px; color: #475569; text-align: left">Student</th>
+<sc-for list="{{weekHead}}" as="d" hint-placeholder-count="5"><th scope="colgroup" colspan="3" style="padding: 8px 6px; font-size: 12px; color: #334155; border-left: 2px solid #E2E8F0">{{d.label}}</th></sc-for>
+</tr>
+<tr style="background: #F8FAFC">
+<sc-for list="{{weekSub}}" as="w" hint-placeholder-count="15"><th scope="col" style="padding: 4px 6px; font-size: 11px; color: #64748B; {{w.sep}}">{{w.lab}}</th></sc-for>
+</tr>
+</thead>
+<tbody>
+<sc-for list="{{weekRows}}" as="r" hint-placeholder-count="3">
+<tr style="border-top: 1px solid #EEF2F6">
+<td style="padding: 8px 12px; text-align: left; font-weight: 600; white-space: nowrap">{{r.name}}</td>
+<sc-for list="{{r.cells}}" as="c" hint-placeholder-count="15"><td style="padding: 8px 6px; {{c.sep}}; {{c.style}}">{{c.v}}</td></sc-for>
+</tr>
+</sc-for>
+<tr style="border-top: 2px solid #0F172A; background: #F8FAFC">
+<th scope="row" style="padding: 8px 12px; text-align: left">Reimbursable meals</th>
+<sc-for list="{{weekHead}}" as="d" hint-placeholder-count="5"><td colspan="3" style="padding: 8px 6px; font-weight: 700; border-left: 2px solid #E2E8F0">{{d.total}}</td></sc-for>
+</tr>
+</tbody>
+</table>
+</div>
+<span style="font-size: 14px; font-weight: 700">Week total: {{weekTotal}} reimbursable meals checked off</span>
+<sc-if value="{{weekSigned}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="padding: 12px 14px; border-radius: 12px; background: #ECFDF3; border: 1px solid #ABEFC6; color: #085D3A; font-size: 14px">{{weekSignedText}}</div>
+</sc-if>
+</div>
+</sc-if>
+</section>
+</sc-if>
 
 <sc-if value="{{hasLatePending}}" hint-placeholder-val="{{ false }}">
 <section aria-label="Late arrivals" style="position: sticky; bottom: 112px; z-index: 2; background: #FFF4E5; border: 1px solid #FBD38D; border-radius: 16px; padding: 14px 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; color: #7A3E00">
@@ -401,6 +516,7 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <span style="font-size: 13px; padding: 4px 10px; border-radius: 999px; background: #F1F5F9; color: #334155">{{p.room}} · {{p.grade}}</span>
 <span style="font-size: 13px; padding: 4px 10px; border-radius: 999px; background: #F6E8E8; color: #6B1719; font-weight: 600">{{p.school}} Elementary</span>
 <span style="font-size: 13px; padding: 4px 10px; border-radius: 999px; background: #E6F6FA; color: #074F66; font-weight: 600">Meal status: {{p.elig}}</span>
+<sc-if value="{{p.optOut}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; padding: 4px 10px; border-radius: 999px; background: #FFF4E5; color: #7A3E00; font-weight: 600">Photo opt-out (parent)</span></sc-if>
 </div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 6px">
 <sc-for list="{{p.stats}}" as="st" hint-placeholder-count="4">
@@ -482,7 +598,7 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <th scope="col" style="padding: 10px 12px; font-size: 12px; color: #475569">Breakfast</th>
 <th scope="col" style="padding: 10px 12px; font-size: 12px; color: #475569">Lunch</th>
 <th scope="col" style="padding: 10px 12px; font-size: 12px; color: #475569">Snack</th>
-<th scope="col" style="padding: 10px 12px; font-size: 12px; color: #475569">Dinner</th>
+<th scope="col" style="padding: 10px 12px; font-size: 12px; color: #475569">Supper</th>
 </tr></thead>
 <tbody>
 <sc-for list="{{p.history}}" as="h" hint-placeholder-count="10">
@@ -641,6 +757,7 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px">
 <div style="display: flex; flex-direction: column; gap: 4px">
 <h1 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 26px">Today's master report · {{mealLabel}}</h1>
+<sc-if value="{{isKitchen}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; font-weight: 600; color: #7A3E00; background: #FFF4E5; border: 1px solid #FBD38D; padding: 4px 10px; border-radius: 8px; align-self: flex-start">Kitchen lead view · read-only · use these totals for prep</span></sc-if>
 <span style="font-size: 13px; color: #475569">{{submittedLine}} · Morning counts due by 9:00 AM, then auto-emailed to Food Service</span>
 <sc-if value="{{hasLateAdds}}" hint-placeholder-val="{{ false }}">
 <span style="font-size: 13px; color: #7A3E00; background: #FFF4E5; border: 1px solid #FBD38D; padding: 6px 10px; border-radius: 8px; margin-top: 4px">Late arrivals: {{lateAddText}}</span>
@@ -649,7 +766,10 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <div style="display: flex; flex-wrap: wrap; gap: 8px">
 <button type="button" onClick="{{openEmail}}" style="height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #CBD5E1; background: #FFFFFF; color: #0F172A; font-weight: 600; font-size: 14px; cursor: pointer">Preview email</button>
 <button type="button" onClick="{{exportMaster}}" style="height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #CBD5E1; background: #FFFFFF; color: #0F172A; font-weight: 600; font-size: 14px; cursor: pointer">Export PDF / CSV</button>
+<button type="button" onClick="{{printAttendance}}" style="height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #CBD5E1; background: #FFFFFF; color: #0F172A; font-weight: 600; font-size: 14px; cursor: pointer">Print attendance sheet</button>
+<sc-if value="{{isAdmin}}" hint-placeholder-val="{{ true }}">
 <button type="button" onClick="{{emailNow}}" style="height: 44px; padding: 0 16px; border-radius: 10px; border: 0; background: #0A6E8C; color: #FFFFFF; font-weight: 700; font-size: 14px; cursor: pointer">{{emailLabel}}</button>
+</sc-if>
 </div>
 </div>
 <div role="group" aria-label="Meal" style="display: flex; flex-wrap: wrap; gap: 6px">
@@ -681,7 +801,9 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <sc-if value="{{r.pending}}" hint-placeholder-val="{{ false }}">
 <span style="display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px">
 <span style="font-size: 12px; font-weight: 700; color: #912018; background: #FEF3F2; padding: 3px 8px; border-radius: 999px">Pending</span>
+<sc-if value="{{isAdmin}}" hint-placeholder-val="{{ true }}">
 <button type="button" onClick="{{r.nudge}}" style="border: 0; background: none; color: #0A6E8C; font-weight: 600; font-size: 13px; cursor: pointer; padding: 6px 0; text-decoration: underline">{{r.nudgeLabel}}</button>
+</sc-if>
 </span>
 </sc-if>
 </td>
@@ -707,7 +829,7 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <div style="display: flex; flex-direction: column; gap: 10px">
 <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
 <h2 style="margin: 0; font-size: 16px">GSRP pre-K rooms · reported separately</h2>
-<span style="font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: #ECFDF3; color: #085D3A">Confirmed: breakfast &amp; lunch only, no choices</span>
+<span style="font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: #ECFDF3; color: #085D3A">Confirmed by Brian: breakfast, lunch &amp; supper · family style</span>
 </div>
 <div style="overflow-x: auto; border: 1px solid #E2E8F0; border-radius: 12px">
 <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 560px">
@@ -716,6 +838,9 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <th scope="col" style="padding: 12px; font-size: 12px; color: #475569">Teacher</th>
 <th scope="col" style="padding: 12px; font-size: 12px; color: #475569">Status</th>
 <th scope="col" style="padding: 12px; font-size: 12px; color: #475569; text-align: right">Served (= present)</th>
+<th scope="col" style="padding: 12px; font-size: 12px; color: #475569; text-align: right">Free</th>
+<th scope="col" style="padding: 12px; font-size: 12px; color: #475569; text-align: right">Reduced</th>
+<th scope="col" style="padding: 12px; font-size: 12px; color: #475569; text-align: right">Paid</th>
 <th scope="col" style="padding: 12px; font-size: 12px; color: #475569; text-align: right">Absent</th>
 </tr></thead>
 <tbody>
@@ -725,12 +850,16 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <td style="padding: 12px; color: #334155">{{g.teacher}}</td>
 <td style="padding: 12px"><span style="font-size: 12px; font-weight: 700; color: #085D3A; background: #ECFDF3; padding: 3px 8px; border-radius: 999px; white-space: nowrap">{{g.status}}</span></td>
 <td style="padding: 12px; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums">{{g.served}}</td>
+<td style="padding: 12px; text-align: right; font-variant-numeric: tabular-nums">{{g.fFree}}</td>
+<td style="padding: 12px; text-align: right; font-variant-numeric: tabular-nums">{{g.fRed}}</td>
+<td style="padding: 12px; text-align: right; font-variant-numeric: tabular-nums">{{g.fPaid}}</td>
 <td style="padding: 12px; text-align: right; color: #912018; font-variant-numeric: tabular-nums">{{g.absent}}</td>
 </tr>
 </sc-for>
 <tr style="border-top: 2px solid #0F172A; background: #F8FAFC">
 <th scope="row" colspan="3" style="padding: 12px; text-align: left">Total GSRP</th>
 <td style="padding: 12px; text-align: right; font-weight: 700">{{gServed}}</td>
+<td colspan="3" style="padding: 12px; text-align: right; font-size: 12px; color: #475569">F/R kept for GSRP and latchkey</td>
 <td style="padding: 12px; text-align: right; font-weight: 700; color: #912018">{{gAbs}}</td>
 </tr>
 </tbody>
@@ -739,7 +868,7 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <span style="font-size: 14px; font-weight: 700">Kitchen total today ({{mealLower}}): {{grandMeals}} meals · K–5 {{totMeals}} + GSRP {{gServed}}</span>
 </div>
 </sc-if>
-<p style="margin: 0; font-size: 12px; color: #475569">"Own" meals are recorded but left out of the Meals column, which is what the kitchen prepares.</p>
+<p style="margin: 0; font-size: 12px; color: #475569">"Own" meals are recorded but left out of the Meals column, which is what the kitchen prepares. The district is 100% CEP, so free / reduced breakdowns are kept only for GSRP and latchkey; sales come from POS reports.</p>
 </section>
 </sc-if>
 
@@ -752,10 +881,10 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <input id="q" type="search" value="{{q}}" onChange="{{onQ}}" placeholder="Name or student ID" style="height: 46px; padding: 0 14px; border: 1px solid #CBD5E1; border-radius: 12px; font-size: 15px; color: #0F172A">
 </div>
 <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
-<span style="font-size: 13px; color: #475569">{{dirCount}}</span>
+<span style="font-size: 13px; color: #475569">{{dirCount}} · roster from MiStar (by teacher) · direct certification updated by Carrie in MiStar, 4× a year</span>
 <sc-if value="{{isAdmin}}" hint-placeholder-val="{{ true }}">
 <button type="button" onClick="{{openAdd}}" style="height: 44px; padding: 0 16px; border-radius: 10px; border: 0; background: #0A6E8C; color: #FFFFFF; font-weight: 700; font-size: 14px; cursor: pointer">Add student</button>
-<button type="button" onClick="{{openImport}}" style="height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #CBD5E1; background: #FFFFFF; color: #0F172A; font-weight: 600; font-size: 14px; cursor: pointer">Import roster (CSV)</button>
+<button type="button" onClick="{{openImport}}" style="height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #CBD5E1; background: #FFFFFF; color: #0F172A; font-weight: 600; font-size: 14px; cursor: pointer">Sync from MiStar</button>
 </sc-if>
 </div>
 </section>
@@ -826,7 +955,7 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <sc-if value="{{isEnrichment}}" hint-placeholder-val="{{ false }}">
 <div style="display: flex; flex-direction: column; gap: 16px">
 <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 12px; background: #EAF2FF; border: 1px solid #C7D7F5; color: #1D3F8A; font-size: 14px">
-<strong>District Enrichment Program · Phase 2 preview.</strong> Program name, data fields and the comparison measure are assumptions to confirm with Michael and Bryan.
+<strong>Enrichment · Phase 2 preview.</strong> Each program keeps its own title (for example Tutoring or Power Hour). Snack sign-ups feed the kitchen count; the comparison measure is still to confirm.
 </div>
 <div role="tablist" aria-label="Programs" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px">
 <sc-for list="{{progTabs}}" as="t" hint-placeholder-count="4">
@@ -927,7 +1056,7 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <sc-if value="{{isLatchkey}}" hint-placeholder-val="{{ false }}">
 <div style="display: flex; flex-direction: column; gap: 16px">
 <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; border-radius: 12px; background: #F6E8E8; border: 1px solid #E5C4C4; color: #6B1719; font-size: 14px">
-<span><strong>Free module.</strong> Latchkey is included at no cost with the Harper Woods Schools MealTrack license.</span>
+<span><strong>Free module.</strong> Latchkey is included at no cost with the Harper Woods Schools MealTrack license. Latchkey keeps a free / reduced breakdown (the district is otherwise 100% CEP). Parent billing: to discuss with Jaber.</span>
 </div>
 <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px">
 <sc-for list="{{lkKpis}}" as="k" hint-placeholder-count="3">
@@ -1007,11 +1136,41 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 </div>
 <aside aria-label="Text preview" style="flex: 1 1 320px; min-width: 0; background: #0F172A; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
 <span style="font-size: 12px; font-weight: 700; color: #94A3B8; letter-spacing: 0.06em; text-transform: uppercase">Text message preview</span>
-<div style="background: #1E293B; color: #F1F5F9; border-radius: 18px 18px 18px 4px; padding: 14px 16px; font-size: 14px; line-height: 1.5">MealTrack: Good morning Ms. Ellis — today's breakfast, lunch and dinner count for Room 205 is due by 9:00 AM. Tap to fill it out: mealtrack.app/r/205</div>
-<div style="background: #1E293B; color: #F1F5F9; border-radius: 18px 18px 18px 4px; padding: 14px 16px; font-size: 14px; line-height: 1.5">MealTrack: Last call — Room 205's meal count is due at 9:00 AM. 10 students still to record.</div>
+<div style="background: #1E293B; color: #F1F5F9; border-radius: 18px 18px 18px 4px; padding: 14px 16px; font-size: 14px; line-height: 1.5">MealTrack: Good morning Ms. Ellis — Room 205's breakfast check-offs and lunch, snack and supper sign-ups are due by 9:00 AM. Tap to fill them in: mealtrack.app/r/205</div>
+<div style="background: #1E293B; color: #F1F5F9; border-radius: 18px 18px 18px 4px; padding: 14px 16px; font-size: 14px; line-height: 1.5">MealTrack: Last call — Room 205's sign-ups are due at 9:00 AM. 10 students still to record.</div>
 <span style="font-size: 12px; color: #94A3B8">Sent from MealTrack · reply STOP to opt out</span>
 </aside>
 </div>
+</sc-if>
+
+<!-- ============ ACTIVITY LOG ============ -->
+<sc-if value="{{isAudit}}" hint-placeholder-val="{{ false }}">
+<section style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 26px">Activity log</h1>
+<span style="font-size: 14px; color: #475569">Every action is recorded with who did it and when. Staff sign in with their district Google account.</span>
+</div>
+<div style="overflow-x: auto; border: 1px solid #E2E8F0; border-radius: 12px">
+<table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 640px">
+<thead><tr style="background: #F8FAFC; text-align: left">
+<th scope="col" style="padding: 12px; font-size: 12px; color: #475569">Time</th>
+<th scope="col" style="padding: 12px; font-size: 12px; color: #475569">User</th>
+<th scope="col" style="padding: 12px; font-size: 12px; color: #475569">Action</th>
+<th scope="col" style="padding: 12px; font-size: 12px; color: #475569">Signed in via</th>
+</tr></thead>
+<tbody>
+<sc-for list="{{auditRows}}" as="a" hint-placeholder-count="5">
+<tr style="border-top: 1px solid #EEF2F6">
+<td style="padding: 12px; white-space: nowrap; color: #334155">{{a.time}}</td>
+<td style="padding: 12px; font-weight: 600">{{a.user}}</td>
+<td style="padding: 12px">{{a.action}}</td>
+<td style="padding: 12px; color: #475569">{{a.via}}</td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</section>
 </sc-if>
 
 <!-- ============ MODULES ============ -->
@@ -1020,7 +1179,7 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <article style="background: #FFFFFF; border: 2px solid #0A6E8C; border-radius: 18px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
 <span style="font-size: 12px; font-weight: 700; color: #085D3A; background: #ECFDF3; padding: 4px 10px; border-radius: 999px; align-self: flex-start">Active · Phase 1</span>
 <h2 style="margin: 0; font-size: 22px; font-family: 'Space Grotesk', sans-serif">Meal Management</h2>
-<p style="margin: 0; font-size: 14px; color: #475569; line-height: 1.55">Attendance and meal choice per student for breakfast, lunch, snack and dinner, with signed attestations, master reports and charts.</p>
+<p style="margin: 0; font-size: 14px; color: #475569; line-height: 1.55">Breakfast check-offs and lunch, snack and supper sign-ups per student, GSRP family-style service with the weekly MDE sheet, signed attestations, master reports and charts.</p>
 <button type="button" onClick="{{goMaster}}" style="margin-top: auto; height: 46px; border-radius: 12px; border: 0; background: #0A6E8C; color: #FFFFFF; font-weight: 700; font-size: 15px; cursor: pointer">Open master report</button>
 </article>
 <article style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
@@ -1032,7 +1191,7 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <article style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 18px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
 <span style="font-size: 12px; font-weight: 700; color: #6B1719; background: #F6E8E8; padding: 4px 10px; border-radius: 999px; align-self: flex-start">Free module</span>
 <h2 style="margin: 0; font-size: 22px; font-family: 'Space Grotesk', sans-serif">Latchkey</h2>
-<p style="margin: 0; font-size: 14px; color: #475569; line-height: 1.55">After-school check-in and pick-up with authorized guardians, linked to snack and dinner counts. Included at no cost.</p>
+<p style="margin: 0; font-size: 14px; color: #475569; line-height: 1.55">After-school check-in and pick-up with authorized guardians, linked to snack and supper counts. Included at no cost.</p>
 <button type="button" onClick="{{goLatchkey}}" style="margin-top: auto; height: 46px; border-radius: 12px; border: 1.5px solid #6B1719; background: #FFFFFF; color: #6B1719; font-weight: 700; font-size: 15px; cursor: pointer">Open latchkey</button>
 </article>
 </section>
@@ -1126,7 +1285,7 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <div role="dialog" aria-modal="true" aria-labelledby="em-title" style="background: #FFFFFF; border-radius: 18px; width: 100%; max-width: 640px; overflow: hidden">
 <div style="padding: 14px 20px; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; font-size: 13px; color: #475569; display: flex; flex-direction: column; gap: 3px">
 <span id="em-title"><strong style="color: #0F172A">Subject:</strong> {{mealLabel}} master report — {{scopeLabel}} — {{todayShort}}</span>
-<span><strong style="color: #0F172A">To:</strong> Food Service Admin; Kitchen Manager</span>
+<span><strong style="color: #0F172A">To:</strong> Brian Corbett; Chris; Kitchen leads (Beacon, Tyrone)</span>
 <span><strong style="color: #0F172A">From:</strong> MealTrack (no-reply)</span>
 </div>
 <div style="padding: 20px; display: flex; flex-direction: column; gap: 14px">
@@ -1192,6 +1351,34 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 </div>
 </sc-if>
 
+<!-- ============ GSRP WEEKLY SHEET SIGN-OFF ============ -->
+<sc-if value="{{weekOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; background: rgba(15,23,42,0.55); display: flex; align-items: flex-start; justify-content: center; padding: 32px 16px; overflow-y: auto; z-index: 50">
+<div role="dialog" aria-modal="true" aria-labelledby="week-title" style="background: #FFFFFF; border-radius: 18px; width: 100%; max-width: 620px; display: flex; flex-direction: column; overflow: hidden">
+<div style="padding: 20px 24px; border-bottom: 1px solid #E2E8F0; display: flex; flex-direction: column; gap: 4px">
+<h2 id="week-title" style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px">Sign the MDE 5-day check-off sheet</h2>
+<span style="font-size: 13px; color: #475569">{{tRoom}} · {{tSchoolFull}} · Week of {{weekRange}}</span>
+</div>
+<div style="padding: 16px 24px; display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 15px; font-weight: 700">{{weekTotal}} reimbursable meals checked off this week</span>
+<p style="margin: 0; font-size: 14px; line-height: 1.5; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px">I certify that the meals checked off on this sheet were served family style, that each child received at least 3 of the 5 meal components with skim white milk, and that attendance was taken in the morning and afternoon. Dated {{today}}.</p>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="week-sig" style="font-size: 13px; font-weight: 600">Type your full name as your digital signature</label>
+<input id="week-sig" type="text" value="{{sig}}" onChange="{{onSig}}" placeholder="e.g. {{tSigName}}" autocomplete="name" style="height: 48px; padding: 0 14px; border: 1px solid #94A3B8; border-radius: 10px; font-size: 18px; font-family: 'Space Grotesk', sans-serif; font-style: italic; color: #0F172A">
+</div>
+<label style="display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer; min-height: 44px">
+<input type="checkbox" checked="{{agree}}" onChange="{{onAgree}}" style="width: 20px; height: 20px; accent-color: #0A6E8C">
+<span>I confirm this sheet is complete and accurate.</span>
+</label>
+</div>
+<div style="padding: 16px 24px; border-top: 1px solid #E2E8F0; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; background: #F8FAFC">
+<button type="button" onClick="{{closeWeek}}" style="height: 48px; padding: 0 20px; border-radius: 12px; border: 1px solid #CBD5E1; background: #FFFFFF; color: #0F172A; font-weight: 600; font-size: 15px; cursor: pointer">Cancel</button>
+<button type="button" onClick="{{signWeek}}" disabled="{{cantSign}}" style="height: 48px; padding: 0 22px; border-radius: 12px; border: 0; font-weight: 700; font-size: 15px; {{signStyle}}">Sign, date &amp; send to Brian</button>
+</div>
+</div>
+</div>
+</sc-if>
+
 <!-- ============ ADD / EDIT STUDENT ============ -->
 <sc-if value="{{formOpen}}" hint-placeholder-val="{{ false }}">
 <div style="position: fixed; inset: 0; background: rgba(15,23,42,0.55); display: flex; align-items: flex-start; justify-content: center; padding: 32px 16px; overflow-y: auto; z-index: 50">
@@ -1237,6 +1424,10 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <button type="button" role="switch" aria-checked="{{f.latchkey}}" aria-label="Enrolled in latchkey" onClick="{{toggleFormLatch}}" style="width: 52px; height: 30px; border-radius: 999px; border: 0; padding: 3px; cursor: pointer; display: flex; flex: none; {{latchTrack}}"><span aria-hidden="true" style="width: 24px; height: 24px; border-radius: 999px; background: #FFFFFF; box-shadow: 0 1px 3px rgba(15,23,42,0.3)"></span></button>
 <span style="font-size: 14px; font-weight: 600">Enrolled in latchkey (after-school care)</span>
 </div>
+<div style="grid-column: 1 / -1; display: flex; align-items: center; gap: 12px">
+<button type="button" role="switch" aria-checked="{{f.photoOptOut}}" aria-label="Parent opted out of photos" onClick="{{toggleOptOut}}" style="width: 52px; height: 30px; border-radius: 999px; border: 0; padding: 3px; cursor: pointer; display: flex; flex: none; {{optOutTrack}}"><span aria-hidden="true" style="width: 24px; height: 24px; border-radius: 999px; background: #FFFFFF; box-shadow: 0 1px 3px rgba(15,23,42,0.3)"></span></button>
+<span style="font-size: 14px; font-weight: 600">Parent opted out of the photo release (show initials only)</span>
+</div>
 </div>
 </div>
 <div style="padding: 16px 24px; border-top: 1px solid #E2E8F0; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; background: #F8FAFC">
@@ -1278,7 +1469,7 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <div style="position: fixed; inset: 0; background: rgba(15,23,42,0.55); display: flex; align-items: flex-start; justify-content: center; padding: 32px 16px; overflow-y: auto; z-index: 50">
 <div role="dialog" aria-modal="true" aria-labelledby="im-title" style="background: #FFFFFF; border-radius: 18px; width: 100%; max-width: 760px; display: flex; flex-direction: column; overflow: hidden">
 <div style="padding: 18px 24px; border-bottom: 1px solid #E2E8F0; display: flex; flex-direction: column; gap: 10px">
-<h2 id="im-title" style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px">Import roster</h2>
+<h2 id="im-title" style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px">Sync roster from MiStar</h2>
 <div style="display: flex; gap: 8px; flex-wrap: wrap">
 <sc-for list="{{impSteps}}" as="s" hint-placeholder-count="3"><span style="font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; {{s.style}}">{{s.label}}</span></sc-for>
 </div>
@@ -1288,11 +1479,11 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <div style="display: flex; flex-direction: column; gap: 14px">
 <label style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 180px; border: 2px dashed #94A3B8; border-radius: 16px; background: #F8FAFC; cursor: pointer; position: relative; text-align: center; padding: 16px">
 <svg aria-hidden="true" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0A6E8C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"></path><path d="m7 9 5-5 5 5"></path><path d="M20 16v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3"></path></svg>
-<span style="font-weight: 700; font-size: 15px">Choose a CSV file from your district system</span>
+<span style="font-weight: 700; font-size: 15px">Pull class lists from MiStar by teacher, or choose a MiStar CSV export</span>
 <span style="font-size: 13px; color: #475569">Columns: first name, last name, student ID, school, classroom, meal benefit, guardian</span>
 <input type="file" accept=".csv,text/csv" onChange="{{onImportFile}}" style="position: absolute; inset: 0; opacity: 0; cursor: pointer">
 </label>
-<button type="button" onClick="{{useSampleCsv}}" style="align-self: flex-start; height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #CBD5E1; background: #FFFFFF; color: #0F172A; font-weight: 600; font-size: 14px; cursor: pointer">Use the sample file (roster_nov.csv)</button>
+<button type="button" onClick="{{useSampleCsv}}" style="align-self: flex-start; height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #CBD5E1; background: #FFFFFF; color: #0F172A; font-weight: 600; font-size: 14px; cursor: pointer">Sync from MiStar now (sample)</button>
 </div>
 </sc-if>
 <sc-if value="{{imp2}}" hint-placeholder-val="{{ false }}">
@@ -1564,28 +1755,28 @@ class Component extends DCLogic {
     };
     // key, first, last, sid, school, room, grade, eligibility, allergy, diet, guardian, programs, latchkey
     const raw = [
-      ['noah', 'Noah', 'Bennett', '20020118', 'Beacon', 'Room 205', 'Grade 2', 'Free', '', 'Standard', 'Angela Bennett', ['STEM Club'], true],
+      ['noah', 'Noah', 'Bennett', '20020118', 'Beacon', 'Room 205', 'Grade 2', 'Free', '', 'Standard', 'Angela Bennett', ['Tutoring'], true],
       ['elijah', 'Elijah', 'Brooks', '20024671', 'Beacon', 'Room 205', 'Grade 2', 'Free', '', 'Standard', 'Marcus Brooks Sr.', ['Hoops & Fitness'], true],
       ['liam', 'Liam', 'Carter', '20025530', 'Beacon', 'Room 205', 'Grade 2', 'Paid', 'Peanut allergy', 'Standard', 'Rachel Carter', [], false],
-      ['isaiah', 'Isaiah', 'Coleman', '20021579', 'Beacon', 'Room 205', 'Grade 2', 'Free', 'Tree nut allergy', 'Standard', 'Denise Coleman', ['STEM Club', 'Hoops & Fitness'], true],
+      ['isaiah', 'Isaiah', 'Coleman', '20021579', 'Beacon', 'Room 205', 'Grade 2', 'Free', 'Tree nut allergy', 'Standard', 'Denise Coleman', ['Tutoring', 'Hoops & Fitness'], true],
       ['layla', 'Layla', 'Foster', '20023341', 'Beacon', 'Room 205', 'Grade 2', 'Reduced', '', 'Standard', 'Tasha Foster', ['Art Studio'], false],
       ['aaliyah', 'Aaliyah', 'Grant', '20023826', 'Beacon', 'Room 205', 'Grade 2', 'Free', '', 'Standard', 'Keisha Grant', ['Art Studio'], true],
       ['jordan', 'Jordan', 'Hayes', '20025487', 'Beacon', 'Room 205', 'Grade 2', 'Free', '', 'Standard', 'Brian Hayes', [], false],
-      ['ethan', 'Ethan', 'Kim', '20025820', 'Beacon', 'Room 205', 'Grade 2', 'Paid', '', 'Standard', 'Grace Kim', ['STEM Club'], false],
+      ['ethan', 'Ethan', 'Kim', '20025820', 'Beacon', 'Room 205', 'Grade 2', 'Paid', '', 'Standard', 'Grace Kim', ['Tutoring'], false],
       ['harper', 'Harper', 'Lewis', '20020549', 'Beacon', 'Room 205', 'Grade 2', 'Reduced', 'Dairy intolerance', 'Lactose-free', 'Amy Lewis', ['Art Studio'], false],
       ['zoe', 'Zoe', 'Mitchell', '20019907', 'Beacon', 'Room 205', 'Grade 2', 'Free', '', 'Standard', 'Monique Mitchell', ['Hoops & Fitness'], true],
       ['caleb', 'Caleb', 'Morgan', '20020114', 'Beacon', 'Room 205', 'Grade 2', 'Paid', '', 'Standard', 'Steven Morgan', [], false],
-      ['maya', 'Maya', 'Patel', '20019966', 'Beacon', 'Room 205', 'Grade 2', 'Reduced', '', 'Vegetarian', 'Priya Patel', ['STEM Club'], false],
+      ['maya', 'Maya', 'Patel', '20019966', 'Beacon', 'Room 205', 'Grade 2', 'Reduced', '', 'Vegetarian', 'Priya Patel', ['Tutoring'], false],
       ['chloe', 'Chloe', 'Ramirez', '20026125', 'Beacon', 'Room 205', 'Grade 2', 'Free', '', 'Standard', 'Lucia Ramirez', ['Art Studio'], true],
       ['mason', 'Mason', 'Reed', '20019968', 'Beacon', 'Room 205', 'Grade 2', 'Free', '', 'Standard', 'Derrick Reed', ['Hoops & Fitness'], true],
       ['ava', 'Ava', 'Thompson', '20021063', 'Beacon', 'Room 205', 'Grade 2', 'Free', '', 'Standard', 'Nicole Thompson', [], false],
-      ['nia', 'Nia', 'Washington', '20019912', 'Beacon', 'Room 205', 'Grade 2', 'Free', '', 'Standard', 'Erica Washington', ['Art Studio', 'STEM Club'], true],
+      ['nia', 'Nia', 'Washington', '20019912', 'Beacon', 'Room 205', 'Grade 2', 'Free', '', 'Standard', 'Erica Washington', ['Art Studio', 'Tutoring'], true],
       ['amari', 'Amari', 'Jones', '20030112', 'Beacon', 'Room 101', 'GSRP Pre-K', 'Free', '', 'Standard', 'Tiffany Jones', [], true],
       ['sofia', 'Sofia', 'Lopez', '20030145', 'Beacon', 'Room 101', 'GSRP Pre-K', 'Free', 'Egg allergy', 'Standard', 'Maria Lopez', [], false],
       ['jayden', 'Jayden', 'Price', '20030177', 'Beacon', 'Room 101', 'GSRP Pre-K', 'Free', '', 'Standard', 'Andre Price', [], true],
-      ['imani', 'Imani', 'Davis', '20027310', 'Tyrone', 'Room 210', 'Grade 1', 'Free', '', 'Standard', 'Crystal Davis', ['Reading Buddies'], true],
-      ['lucas', 'Lucas', 'Martin', '20027342', 'Tyrone', 'Room 210', 'Grade 1', 'Paid', '', 'Standard', 'Jason Martin', ['Reading Buddies'], false],
-      ['kennedy', 'Kennedy', 'Hall', '20027368', 'Tyrone', 'Room 210', 'Grade 1', 'Reduced', '', 'Halal', 'Yasmin Hall', ['Reading Buddies', 'Hoops & Fitness'], true],
+      ['imani', 'Imani', 'Davis', '20027310', 'Tyrone', 'Room 210', 'Grade 1', 'Free', '', 'Standard', 'Crystal Davis', ['Power Hour'], true],
+      ['lucas', 'Lucas', 'Martin', '20027342', 'Tyrone', 'Room 210', 'Grade 1', 'Paid', '', 'Standard', 'Jason Martin', ['Power Hour'], false],
+      ['kennedy', 'Kennedy', 'Hall', '20027368', 'Tyrone', 'Room 210', 'Grade 1', 'Reduced', '', 'Halal', 'Yasmin Hall', ['Power Hour', 'Hoops & Fitness'], true],
       ['marcus', 'Marcus', 'Young', '20027391', 'Tyrone', 'Room 210', 'Grade 1', 'Free', 'Shellfish allergy', 'Standard', 'Lamar Young', ['Hoops & Fitness'], true],
       ['riley', 'Riley', 'Scott', '20027404', 'Tyrone', 'Room 210', 'Grade 1', 'Free', '', 'Standard', 'Dana Scott', [], false]
     ];
@@ -1595,13 +1786,17 @@ class Component extends DCLogic {
       phone: '(313) 555-01' + String(10 + i)
     }));
     this.ROOM205 = this.ALL.filter((s) => s.room === 'Room 205');
+    // Parents who opted out of the photo release: show initials instead of a picture.
+    this.ALL.forEach((s) => { if (s.key === 'caleb' || s.key === 'lucas') s.photoOptOut = true; });
     this.KEYS = Object.keys(AV).sort();
     this.GSRP_OPTS = ['Served', 'Not served'];
     this.ACCOUNTS = [
       { email: 'jellis@hwschools.org', pw: 'Beacon205!', role: 'teacher', name: 'Ms. Jordan Ellis', sig: 'Jordan Ellis', ini: 'JE', school: 'Beacon', room: 'Room 205', grade: 'Grade 2', color: '#0F172A' },
       { email: 'dowens@hwschools.org', pw: 'Beacon101!', role: 'teacher', name: 'Ms. Dana Owens', sig: 'Dana Owens', ini: 'DO', school: 'Beacon', room: 'Room 101', grade: 'GSRP Pre-K', color: '#0A6E8C' },
       { email: 'vlane@hwschools.org', pw: 'Tyrone210!', role: 'teacher', name: 'Mr. Victor Lane', sig: 'Victor Lane', ini: 'VL', school: 'Tyrone', room: 'Room 210', grade: 'Grade 1', color: '#1D3F8A' },
-      { email: 'foodservice@hwschools.org', pw: 'Food2026!', role: 'admin', name: 'Food Service Admin', sig: '', ini: 'FS', school: 'Beacon', room: '', grade: '', color: '#6B1719' }
+      { email: 'foodservice@hwschools.org', pw: 'Food2026!', role: 'admin', name: 'Brian Corbett', sig: 'Brian Corbett', ini: 'BC', school: 'Beacon', room: '', grade: '', color: '#6B1719' },
+      { email: 'kitchen.beacon@hwschools.org', pw: 'Kitchen26!', role: 'kitchen', name: 'Ms. Tanya Brooks', sig: 'Tanya Brooks', ini: 'TB', school: 'Beacon', room: '', grade: 'Kitchen lead', color: '#7A3E00' },
+      { email: 'khall@hwschools.org', pw: 'Program26!', role: 'program', name: 'Ms. Keisha Hall', sig: 'Keisha Hall', ini: 'KH', school: 'Beacon', room: '', grade: 'Enrichment & latchkey staff', programs: ['Art Studio', 'Tutoring'], color: '#1D3F8A' }
     ];
     this.IMPORT = [
       ['Jalen', 'Brooks', '20031201', 'Tyrone', 'Room 220', 'Free', 'Tonya Brooks'],
@@ -1617,10 +1812,10 @@ class Component extends DCLogic {
       { id: 'dinner', label: 'Dinner', time: '4:00 – 6:00 PM', opts: ['Dinner A', 'Dinner B', 'Own dinner'], until: 24, next: null, due: '4:30 PM' }
     ];
     this.MP = [
-      { label: 'Breakfast', opts: ['Breakfast', 'Own'] },
+      { label: 'Breakfast', opts: ['Served', 'Not taken'] },
       { label: 'Lunch', opts: ['Lunch A', 'Lunch B', 'Salad Bar', 'Own'] },
-      { label: 'Snack', opts: ['Snack', 'Own'] },
-      { label: 'Dinner', opts: ['Dinner A', 'Dinner B', 'Own'] }
+      { label: 'Snack', opts: ['Snack', 'No snack'] },
+      { label: 'Supper', opts: ['Supper', 'No supper'] }
     ];
     this.ROOMS = [
       ['Beacon', 'Room 101', 'GSRP Pre-K', 'Ms. Dana Owens', 16, 'GSRP'], ['Beacon', 'Room 102', 'Kindergarten', 'Mr. Luis Ortega', 22, 'K–5'],
@@ -1631,27 +1826,34 @@ class Component extends DCLogic {
       ['Tyrone', 'Latchkey', 'After school', 'Mr. Omar Hill', 18, 'Latchkey']
     ];
     this.PROGRAMS = [
-      { name: 'STEM Club', meta: 'Beacon · Mon & Wed · 3:30–4:30 PM', lead: 'Mr. Andre Simmons' },
+      { name: 'Tutoring', meta: 'Beacon · Mon & Wed · 3:30–4:30 PM', lead: 'Mr. Andre Simmons' },
       { name: 'Art Studio', meta: 'Beacon · Tue & Thu · 3:30–4:30 PM', lead: 'Ms. Keisha Hall' },
-      { name: 'Reading Buddies', meta: 'Tyrone · Mon–Thu · 3:15–4:00 PM', lead: 'Ms. Holly Chen' },
+      { name: 'Power Hour', meta: 'Tyrone · Mon–Thu · 3:15–4:00 PM', lead: 'Ms. Holly Chen' },
       { name: 'Hoops & Fitness', meta: 'Both schools · Fri · 3:30–5:00 PM', lead: 'Coach R. Bell' }
     ];
     // Client feedback (Nov 13): one morning count — breakfast, lunch and dinner — due by 9:00 AM.
     // GSRP rooms: breakfast and lunch only, no choices (present = served).
+    // Brian Corbett (Nov 17): breakfast is served in the classroom (check-off); lunch, the after-school
+    // snack and the Supper Program are sign-ups served in the cafeteria. All due to the kitchen by 9:00 AM.
     this.DAY_MEALS = [
-      { id: 'breakfast', label: 'Breakfast', opts: ['Breakfast', 'Own'] },
-      { id: 'lunch', label: 'Lunch', opts: ['Lunch A', 'Lunch B', 'Salad Bar', 'Own'] },
-      { id: 'dinner', label: 'Dinner', opts: ['Dinner A', 'Dinner B', 'Own', 'Not staying'] }
+      { id: 'breakfast', label: 'Breakfast · classroom', short: 'Breakfast', opts: ['Served', 'Not taken'] },
+      { id: 'lunch', label: 'Lunch sign-up · cafeteria', short: 'Lunch', opts: ['Lunch A', 'Lunch B', 'Salad Bar', 'Own'] },
+      { id: 'snack', label: 'After-school snack sign-up', short: 'Snack', opts: ['Snack', 'No snack'] },
+      { id: 'dinner', label: 'Supper Program · cafeteria', short: 'Supper', opts: ['Supper', 'No supper'] }
     ];
+    this.FILL = { breakfast: 0, lunch: 0, snack: 1, dinner: 1 };
     this.DUE_HOUR = 9;
-    const att = {}, sel = { breakfast: {}, lunch: {}, dinner: {} }, submitted = {};
-    this.ACCOUNTS.filter((a) => a.role === 'teacher' && a.grade !== 'GSRP Pre-K').forEach((acc) => {
+    const att = {}, sel = { breakfast: {}, lunch: {}, snack: {}, dinner: {} }, submitted = {};
+    const chk = { b: {}, l: {}, s: {} };
+    this.ACCOUNTS.filter((a) => a.role === 'teacher').forEach((acc) => {
       const roster = this.ALL.filter((s) => s.room === acc.room && s.school === acc.school);
+      if (acc.grade === 'GSRP Pre-K') { roster.forEach((s) => { chk.b[s.sid] = true; }); return; }
       const n = roster.length > 6 ? 6 : 1;
       roster.slice(0, n).forEach((s, i) => {
         sel.breakfast[s.sid] = i % 5 === 4 ? 1 : 0;
         sel.lunch[s.sid] = i % 3;
-        sel.dinner[s.sid] = s.latchkey ? i % 2 : 3;
+        sel.snack[s.sid] = (s.programs.length || s.latchkey) ? 0 : 1;
+        sel.dinner[s.sid] = s.latchkey ? 0 : 1;
       });
       if (roster.length > 7) att[roster[7].sid] = 'absent';
     });
@@ -1666,13 +1868,21 @@ class Component extends DCLogic {
       acct: 0, loginEmail: '', loginPw: '', loginErr: '', loginSchool: 'Beacon',
       extra: [], over: {}, formMode: null, form: null, formErr: '', photoOpen: false,
       importOpen: false, impStep: 1, impFile: '', extraRooms: [], roomForm: null, roomErr: '',
-      toast: '', rcpt: 'Food Service Admin; Kitchen Manager',
+      toast: '', rcpt: 'Brian Corbett; Chris; Kitchen leads (Beacon, Tyrone)',
       loggedIn: false, loginRole: 0, role: 'teacher', screen: 'register', back: 'register', profileId: null,
       school: 0, range: 1, meal: 1, period: null, att, sel, submitted,
       modal: false, done: false, sig: '', agree: false, nudged: {}, emailed: false, emailOpen: false,
       q: '', program: 0, enr, latch, subsNew: [], cmp: '0', late: {}, lateOpen: false,
+      pm: {}, chk, gTab: 'today', weekSigned: {}, weekOpen: false,
+      audit: [
+        { time: '8:52 AM', user: 'Mr. Victor Lane', action: 'Signed 9:00 AM count · Room 210', via: 'Google sign-in' },
+        { time: '8:47 AM', user: 'Ms. Dana Owens', action: 'Submitted GSRP morning attendance · Room 101', via: 'Google sign-in' },
+        { time: '8:31 AM', user: 'System', action: 'Last-call reminder sent to 3 rooms', via: 'Automatic' },
+        { time: '7:00 AM', user: 'System', action: 'Morning reminder sent to all teachers', via: 'Automatic' },
+        { time: 'Yesterday 4:10 PM', user: 'Carrie (MiStar)', action: 'Direct certification list updated in MiStar', via: 'MiStar sync' }
+      ],
       rem: [
-        { label: 'Morning meal count', note: 'Breakfast, lunch and dinner · due by 9:00 AM', time: '07:00', on: true, email: true, sms: true },
+        { label: 'Morning count', note: 'Breakfast check-offs + lunch, snack and supper sign-ups · due 9:00 AM', time: '07:00', on: true, email: true, sms: true },
         { label: 'Last call', note: 'Only rooms that haven\'t submitted yet', time: '08:30', on: true, email: true, sms: true },
         { label: 'Past due alert', note: 'To the Food Service Admin, rooms still missing at 9:00', time: '09:05', on: true, email: true, sms: false }
       ]
@@ -1689,6 +1899,7 @@ class Component extends DCLogic {
     return this.ALL.concat(this.state.extra).map((s) => (over[s.sid] ? Object.assign({}, s, over[s.sid]) : s)).map((s) => Object.assign({}, s, { name: s.first + ' ' + s.last }));
   }
   pv(s) {
+    if (s.photoOptOut) return { photo: 'av', photoBg: '', ini: ((s.first || '?')[0] + (s.last || '?')[0]).toUpperCase() };
     const has = !!(s.upload || s.photoKey);
     return {
       photo: s.upload ? 'av' : (s.photoKey ? 'av av-' + s.photoKey : 'av'),
@@ -1706,6 +1917,21 @@ class Component extends DCLogic {
     this._tt = setTimeout(() => this.setState({ toast: '' }), 3200);
   }
   componentWillUnmount() { clearTimeout(this._tt); }
+  enter(a, ai) {
+    const screens = { teacher: 'register', admin: 'dashboard', kitchen: 'master', program: 'enrichment' };
+    const patch = { loggedIn: true, loginErr: '', role: a.role, screen: screens[a.role], period: null, q: '', roomF: 'all' };
+    if (a.role === 'teacher') patch.acct = ai; else if (a.role !== 'admin') patch.acctOther = ai;
+    if (a.role === 'kitchen') { patch.school = a.school === 'Tyrone' ? 2 : 1; patch.meal = 1; }
+    if (a.role === 'program') patch.program = Math.max(0, this.PROGRAMS.findIndex((p) => (a.programs || []).indexOf(p.name) >= 0));
+    if (a.role === 'admin') patch.school = 0;
+    this.setState(patch);
+  }
+  // Every action is recorded with who did it and when (Brian: Google sign-in OK with user attribution + timestamp).
+  log(action) {
+    const st = this.state;
+    const user = st.role === 'teacher' ? this.acc().name : 'Brian Corbett';
+    this.setState((s) => ({ audit: [{ time: this.nowTime(), user, action, via: 'Google sign-in' }].concat(s.audit || []) }));
+  }
   enrPct(s, pi) { return Math.round(55 + this.rnd(s.idx * 11 + pi * 3) * 45); }
   vCompare(roster) {
     const st = this.state;
@@ -1766,7 +1992,7 @@ class Component extends DCLogic {
     const rOn = {};
     ['school', 'number', 'grade', 'count', 'teacher', 'email', 'phone'].forEach((k) => { rOn[k] = (e) => setR({ [k]: e.target.value }); });
     const TYPES = ['K–5', 'GSRP', 'Enrichment', 'Latchkey'];
-    const MEALS = { 'K–5': 'Breakfast · Lunch', 'GSRP': 'Breakfast · Lunch · Snack [GSRP rules TBD]', 'Enrichment': 'Snack · Dinner', 'Latchkey': 'Snack · Dinner' };
+    const MEALS = { 'K–5': 'Breakfast check-off (classroom) · Lunch, snack and supper sign-ups', 'GSRP': 'Breakfast · Lunch · Supper, family style · AM/PM attendance · weekly MDE sheet', 'Enrichment': 'Snack · Supper', 'Latchkey': 'Snack · Supper' };
     return {
       formOpen: !!st.formMode, formTitle: st.formMode === 'edit' ? 'Edit profile · ' + (f.first || '') + ' ' + (f.last || '') : 'Add student',
       formSave: st.formMode === 'edit' ? 'Save changes' : 'Add student', formErr: st.formErr,
@@ -1783,20 +2009,24 @@ class Component extends DCLogic {
         if (!first || !last) { this.setState({ formErr: 'Enter the student\'s first and last name.' }); return; }
         if (!/^\d{6,10}$/.test(sid)) { this.setState({ formErr: 'Student ID must be 6–10 digits.' }); return; }
         if (!(f.guardian || '').trim()) { this.setState({ formErr: 'Add at least one parent or guardian.' }); return; }
-        const data = { first, last, sid, school: f.school, room: f.room, grade: this.gradeFor(f.school, f.room), elig: f.elig, allergy: (f.allergy || '').trim(), diet: f.diet, guardian: f.guardian.trim(), phone: f.phone || '(313) 555-0100', programs: f.programs || [], latchkey: !!f.latchkey, photoKey: f.photoKey || null, upload: f.upload || null };
+        const data = { first, last, sid, school: f.school, room: f.room, grade: this.gradeFor(f.school, f.room), elig: f.elig, allergy: (f.allergy || '').trim(), diet: f.diet, guardian: f.guardian.trim(), phone: f.phone || '(313) 555-0100', programs: f.programs || [], latchkey: !!f.latchkey, photoOptOut: !!f.photoOptOut, photoKey: f.photoKey || null, upload: f.upload || null };
         if (st.formMode === 'add') {
           if (this.all().some((s) => s.sid === sid)) { this.setState({ formErr: 'That student ID already exists.' }); return; }
           const s = Object.assign({ key: 'new' + sid, idx: 200 + st.extra.length }, data);
           this.setState({ extra: st.extra.concat([s]), formMode: null, form: null, profileId: sid, back: 'students', screen: 'profile' });
+          this.log('Added student ' + first + ' ' + last + ' · ' + data.room);
           this.showToast(first + ' ' + last + ' added to ' + data.room + ' · ' + data.school);
         } else {
           const over = Object.assign({}, st.over); over[sid] = Object.assign({}, over[sid], data);
           this.setState({ over, formMode: null, form: null });
+          this.log('Edited profile · ' + first + ' ' + last);
           this.showToast('Profile saved for ' + first + ' ' + last);
         }
       },
-      openAdd: () => this.setState({ formMode: 'add', formErr: '', form: { first: '', last: '', sid: String(20031300 + st.extra.length * 7), school: 'Beacon', room: 'Room 205', elig: 'Free', allergy: '', diet: 'Standard', guardian: '', phone: '', programs: [], latchkey: false, photoKey: null, upload: null } }),
-      openEdit: () => { if (prof) this.setState({ formMode: 'edit', formErr: '', form: { first: prof.first, last: prof.last, sid: prof.sid, school: prof.school, room: prof.room, elig: prof.elig, allergy: prof.allergy, diet: prof.diet, guardian: prof.guardian, phone: prof.phone, programs: prof.programs.slice(), latchkey: prof.latchkey, photoKey: prof.photoKey, upload: prof.upload } }); },
+      openAdd: () => this.setState({ formMode: 'add', formErr: '', form: { first: '', last: '', sid: String(20031300 + st.extra.length * 7), school: 'Beacon', room: 'Room 205', elig: 'Free', allergy: '', diet: 'Standard', guardian: '', phone: '', programs: [], latchkey: false, photoOptOut: false, photoKey: null, upload: null } }),
+      openEdit: () => { if (prof) this.setState({ formMode: 'edit', formErr: '', form: { first: prof.first, last: prof.last, sid: prof.sid, school: prof.school, room: prof.room, elig: prof.elig, allergy: prof.allergy, diet: prof.diet, guardian: prof.guardian, phone: prof.phone, programs: prof.programs.slice(), latchkey: prof.latchkey, photoOptOut: !!prof.photoOptOut, photoKey: prof.photoKey, upload: prof.upload } }); },
+      toggleOptOut: () => setF({ photoOptOut: !f.photoOptOut }),
+      optOutTrack: f.photoOptOut ? 'background:#0A6E8C;justify-content:flex-end' : 'background:#CBD5E1;justify-content:flex-start',
       avatars, onUpload,
       photoOpen: st.photoOpen && !st.formMode,
       openPhoto: () => this.setState({ photoOpen: true }),
@@ -1814,6 +2044,7 @@ class Component extends DCLogic {
       doImport: () => {
         const add = okRows.map((r, i) => { const x = r.raw; return { key: 'imp' + x[2], idx: 300 + st.extra.length + i, first: x[0], last: x[1], sid: x[2], school: x[3], room: x[4], grade: this.gradeFor(x[3], x[4]), elig: x[5], allergy: '', diet: 'Standard', guardian: x[6], phone: '(313) 555-0100', programs: [], latchkey: false, photoKey: null, upload: null }; });
         this.setState({ extra: st.extra.concat(add), impStep: 3, impDone: add.length, impSkipped: imp.length - add.length });
+        this.log('Synced roster from MiStar · ' + add.length + ' students added');
       },
       roomOpen: !!st.roomForm, rf, rOn, roomErr: st.roomErr,
       typeSeg: TYPES.map((label) => ({ label, on: rf.type === label, style: rf.type === label ? ON : OFF, pick: () => setR({ type: label }) })),
@@ -1827,11 +2058,12 @@ class Component extends DCLogic {
         const name = /^room/i.test(num) ? num : 'Room ' + num;
         if (this.roomsAll().some((r) => r[0] === rf.school && r[1] === name)) { this.setState({ roomErr: name + ' already exists at ' + rf.school + '.' }); return; }
         this.setState({ extraRooms: st.extraRooms.concat([[rf.school, name, rf.grade, teacher, Number(rf.count) || 0, rf.type]]), roomForm: null });
+        this.log('Added classroom ' + name + ' · ' + rf.school);
         this.showToast(name + ' added · login invite sent to ' + (rf.email || teacher));
       },
-      exportMaster: () => this.showToast('Exported master report (PDF + CSV)'),
+      exportMaster: () => { this.log('Exported master report (PDF + CSV)'); this.showToast('Exported master report (PDF + CSV)'); },
       rcpt: st.rcpt, onRcpt: (e) => this.setState({ rcpt: e.target.value }),
-      saveReminders: () => this.showToast('Reminder settings saved'),
+      saveReminders: () => { this.log('Saved reminder settings'); this.showToast('Reminder settings saved'); },
       hasToast: !!st.toast, toast: st.toast
     };
   }
@@ -1859,10 +2091,13 @@ class Component extends DCLogic {
   }
 
   vRegister() {
+    // Brian Corbett (Nov 17): by 9:00 AM teachers submit breakfast check-offs plus lunch, snack and supper sign-ups.
+    // GSRP: breakfast, lunch and supper served family-style in the classroom; AM + PM attendance; weekly MDE 5-day check-off sheet.
     const st = this.state;
     const A0 = this.acc(), ROSTER = this.roster(), RK = 'day|' + A0.room;
     const isGSRP = A0.grade === 'GSRP Pre-K';
     const MEALS = isGSRP ? [] : this.DAY_MEALS;
+    const LATE_IDS = isGSRP ? [] : ['lunch', 'snack', 'dinner'];
     const locked = !!st.submitted[RK];
     const now = new Date(), hr = now.getHours() + now.getMinutes() / 60;
     const late = hr >= this.DUE_HOUR && !locked;
@@ -1870,6 +2105,9 @@ class Component extends DCLogic {
     const OFF = 'background:#FFFFFF;color:#0F172A;border-color:#CBD5E1';
     const counts = {}; this.DAY_MEALS.forEach((m) => { counts[m.id] = m.opts.map(() => 0); });
     let present = 0, absent = 0, recorded = 0, lateMissing = 0, lateCount = 0;
+    const mealName = (k, c) => { const m = this.DAY_MEALS.find((x) => x.id === k); return c != null ? m.opts[c] : m.short + ' ?'; };
+    const chk = st.chk || { b: {}, l: {}, s: {} };
+    const toggleChk = (k, sid) => () => { const c = JSON.parse(JSON.stringify(st.chk || { b: {}, l: {}, s: {} })); c[k][sid] = !c[k][sid]; this.setState({ chk: c }); };
     const cards = ROSTER.map((s) => {
       const isAbsent = st.att[s.sid] === 'absent';
       const picks = MEALS.map((m) => (st.sel[m.id] || {})[s.sid]);
@@ -1880,21 +2118,29 @@ class Component extends DCLogic {
         absent++;
         if (isLate) {
           lateCount++;
-          if (!isGSRP) ['lunch', 'dinner'].forEach((k) => { const c = (st.sel[k] || {})[s.sid]; if (c != null) counts[k][c]++; else if (!L.sent) lateMissing++; });
+          LATE_IDS.forEach((k) => { const c = (st.sel[k] || {})[s.sid]; if (c != null) counts[k][c]++; else if (!L.sent) lateMissing++; });
         }
       } else { present++; if (done) recorded++; MEALS.forEach((m, mi) => { if (picks[mi] != null) counts[m.id][picks[mi]]++; }); }
       const alert = s.allergy || (s.diet !== 'Standard' ? s.diet : '');
+      const pmAbsent = (st.pm || {})[s.sid] === 'absent';
+      const amOk = !isAbsent || isLate;
+      const gChecks = [['b', 'Breakfast', !isAbsent], ['l', 'Lunch', amOk], ['s', 'Supper', amOk]].map(([k, label, enabled]) => {
+        const on = !!chk[k][s.sid] && enabled;
+        return { label, on, disabled: !enabled, text: on ? '✓ ' + label : label, style: on ? 'background:#085D3A;color:#FFFFFF;border-color:#085D3A' : (enabled ? OFF : 'background:#F1F5F9;color:#94A3B8;border-color:#E2E8F0'), toggle: toggleChk(k, s.sid) };
+      });
       return {
         name: s.name, sid: s.sid, ...this.pv(s), hasAlert: !!alert, alert,
         photoStyle: isAbsent && !isLate ? 'filter:grayscale(1);opacity:0.6' : '',
         absent: isAbsent, isPresent: !isAbsent,
         isLate, showAbsentNote: isAbsent && !isLate, canMarkLate: isAbsent && !L,
-        absentNote: locked ? 'Absent at the 9:00 AM count — no meals ordered. If they come in later, tap below.' : 'Absent — no meals ordered. If they come in late, tap below: breakfast is skipped and you pick lunch and dinner.',
-        lateBtnLabel: isGSRP ? 'Arrived late — add lunch' : 'Arrived late — add lunch & dinner',
+        absentNote: locked
+          ? 'Absent at the 9:00 AM count — no meals ordered. If they come in later, tap below.'
+          : (isGSRP ? 'Absent this morning. If they come in late, tap below: breakfast is missed, lunch and supper are served.' : 'Absent — no meals ordered. If they come in late, tap below: breakfast is missed and you sign them up for lunch, snack and supper.'),
+        lateBtnLabel: isGSRP ? 'Arrived late — add lunch & supper' : 'Arrived late — add lunch, snack & supper',
         lateBadge: L ? 'Arrived late · ' + L.time + (L.sent ? ' · update sent' : '') : '',
         canUndoLate: isLate && !L.sent,
         markLate: () => { const lt = Object.assign({}, st.late); lt[s.sid] = { time: this.nowTime(), sent: false }; this.setState({ late: lt }); },
-        undoLate: () => { const lt = Object.assign({}, st.late); delete lt[s.sid]; const sl = JSON.parse(JSON.stringify(st.sel)); ['lunch', 'dinner'].forEach((k) => { if (sl[k]) delete sl[k][s.sid]; }); this.setState({ late: lt, sel: sl }); },
+        undoLate: () => { const lt = Object.assign({}, st.late); delete lt[s.sid]; const sl = JSON.parse(JSON.stringify(st.sel)); LATE_IDS.forEach((k) => { if (sl[k]) delete sl[k][s.sid]; }); this.setState({ late: lt, sel: sl }); },
         lateMeals: isGSRP ? [] : this.DAY_MEALS.filter((m) => m.id !== 'breakfast').map((m) => {
           const c = (st.sel[m.id] || {})[s.sid];
           return { label: m.label, opts: m.opts.map((label, oi) => ({ label, on: c === oi, disabled: !!(L && L.sent), style: c === oi ? ON : OFF, pick: () => this.update((a, sl) => { sl[m.id] = sl[m.id] || {}; sl[m.id][s.sid] = oi; }) })) };
@@ -1905,9 +2151,19 @@ class Component extends DCLogic {
         absentStyle: isAbsent ? 'background:#B42318;color:#FFFFFF' : 'background:#FFFFFF;color:#334155',
         setPresent: () => this.update((a) => { delete a[s.sid]; }),
         setAbsent: () => this.update((a, sl) => { a[s.sid] = 'absent'; this.DAY_MEALS.forEach((m) => { if (sl[m.id]) delete sl[m.id][s.sid]; }); }),
+        amLabel: isAbsent ? (isLate ? 'Late ' + L.time : 'Absent') : 'Present',
+        amStyle: isAbsent ? (isLate ? 'background:#FFF4E5;color:#7A3E00;border-color:#FBD38D' : 'background:#FEF3F2;color:#912018;border-color:#FECDCA') : 'background:#FFFFFF;color:#0F172A;border-color:#CBD5E1',
+        amToggle: () => (isAbsent ? this.update((a) => { delete a[s.sid]; }) : this.update((a) => { a[s.sid] = 'absent'; })),
+        amDisabled: locked,
+        pmLabel: pmAbsent ? 'Absent' : 'Present',
+        pmStyle: pmAbsent ? 'background:#FEF3F2;color:#912018;border-color:#FECDCA' : 'background:#FFFFFF;color:#0F172A;border-color:#CBD5E1',
+        pmToggle: () => { const pm = Object.assign({}, st.pm); if (pmAbsent) delete pm[s.sid]; else pm[s.sid] = 'absent'; this.setState({ pm }); },
+        gChecks,
         attText: isAbsent ? 'Absent' : 'Present',
         attCellStyle: isAbsent ? 'color:#912018;font-weight:600' : 'color:#334155',
-        choiceText: isLate ? 'Breakfast missed (late) · ' + (isGSRP ? 'Lunch (served)' : ['lunch', 'dinner'].map((k) => { const m = this.DAY_MEALS.find((x) => x.id === k); const c = (st.sel[k] || {})[s.sid]; return c != null ? m.opts[c] : m.label + ' ?'; }).join(' · ')) : isAbsent ? 'No meals' : (isGSRP ? 'Breakfast · Lunch (served)' : MEALS.map((m, mi) => (picks[mi] != null ? m.opts[picks[mi]] : m.label + ' ?')).join(' · ')),
+        choiceText: isLate
+          ? 'Breakfast missed (late) · ' + (isGSRP ? 'Lunch & supper served' : LATE_IDS.map((k) => mealName(k, (st.sel[k] || {})[s.sid])).join(' · '))
+          : isAbsent ? 'No meals' : (isGSRP ? 'Breakfast · Lunch · Supper (family style)' : MEALS.map((m, mi) => mealName(m.id, picks[mi])).join(' · ')),
         meals: MEALS.map((m, mi) => ({
           label: m.label,
           opts: m.opts.map((label, oi) => ({ label, on: picks[mi] === oi, disabled: locked, style: picks[mi] === oi ? ON : OFF, pick: () => this.update((a, sl) => { sl[m.id] = sl[m.id] || {}; sl[m.id][s.sid] = oi; }) }))
@@ -1916,23 +2172,25 @@ class Component extends DCLogic {
     });
     if (isGSRP) recorded = present;
     const mealSummary = isGSRP
-      ? [{ label: 'Breakfast', text: present + ' served' }, { label: 'Lunch', text: (present + lateCount) + ' served' + (lateCount ? ' (incl. ' + lateCount + ' late)' : '') }]
-      : MEALS.map((m) => ({ label: m.label, text: m.opts.map((o, i) => counts[m.id][i] + ' ' + o).join(' · ') }));
+      ? [{ label: 'Breakfast', text: present + ' served' },
+         { label: 'Lunch', text: (present + lateCount) + ' served' + (lateCount ? ' (incl. ' + lateCount + ' late)' : '') },
+         { label: 'Supper', text: (present + lateCount) + ' served' + (lateCount ? ' (incl. ' + lateCount + ' late)' : '') }]
+      : MEALS.map((m) => ({ label: m.short, text: m.opts.map((o, i) => counts[m.id][i] + ' ' + o).join(' · ') }));
     const cantSubmit = locked || recorded < present || lateMissing > 0;
     const cantSign = st.sig.trim().length < 3 || !st.agree;
     const amended = !!(st.amended || {})[RK];
     const LATE = st.late || {};
     const latePending = ROSTER.filter((s) => st.att[s.sid] === 'absent' && LATE[s.sid] && !LATE[s.sid].sent);
-    const lateNeed = isGSRP ? [] : ['lunch', 'dinner'];
-    const lateReady = latePending.every((s) => lateNeed.every((k) => (st.sel[k] || {})[s.sid] != null));
+    const lateReady = latePending.every((s) => LATE_IDS.every((k) => (st.sel[k] || {})[s.sid] != null));
     const lateRows = latePending.map((s) => ({
       name: s.name, ...this.pv(s), time: LATE[s.sid].time,
-      meals: isGSRP ? 'Breakfast missed · Lunch served' : 'Breakfast missed · ' + lateNeed.map((k) => { const m = this.DAY_MEALS.find((x) => x.id === k); const c = (st.sel[k] || {})[s.sid]; return c != null ? m.opts[c] : m.label + ' not picked'; }).join(' · ')
+      meals: isGSRP ? 'Breakfast missed · Lunch & supper served' : 'Breakfast missed · ' + LATE_IDS.map((k) => mealName(k, (st.sel[k] || {})[s.sid])).join(' · ')
     }));
+    const today = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     const lateVals = {
       hasLatePending: latePending.length > 0 && locked,
       latePendingText: latePending.length + (latePending.length > 1 ? ' late arrivals' : ' late arrival') + ' to add to today\'s count',
-      lateHint: lateReady ? 'Breakfast is marked missed. Review and sign to update the kitchen.' : 'Pick lunch and dinner for each late student first.',
+      lateHint: lateReady ? 'Breakfast is marked missed. Review and sign to update the kitchen.' : 'Sign each late student up for lunch, snack and supper first.',
       lateNotReady: !lateReady,
       lateBtnStyle: lateReady ? 'background:#7A3E00;color:#FFFFFF;cursor:pointer' : 'background:#E2E8F0;color:#64748B;cursor:not-allowed',
       lateOpen: !!st.lateOpen, lateRows,
@@ -1941,34 +2199,83 @@ class Component extends DCLogic {
       signLate: () => {
         const lt = Object.assign({}, LATE);
         latePending.forEach((s) => { lt[s.sid] = Object.assign({}, lt[s.sid], { sent: true }); });
-        const row = { date: new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }), period: 'Late-arrival update', room: A0.room, present: '+' + latePending.length + ' late', breakdown: lateRows.map((r) => r.name + ': ' + r.meals).join(' | '), by: st.sig, time: this.nowTime() };
+        const row = { date: today, period: 'Late-arrival update', room: A0.room, present: '+' + latePending.length + ' late', breakdown: lateRows.map((r) => r.name + ': ' + r.meals).join(' | '), by: st.sig, time: this.nowTime() };
         this.setState({ late: lt, lateOpen: false, subsNew: [row].concat(st.subsNew) });
+        this.log('Signed late-arrival update · ' + A0.room + ' (' + latePending.length + ')');
         this.showToast('Late-arrival update sent · kitchen count updated for ' + latePending.length + (latePending.length > 1 ? ' students' : ' student'));
       }
     };
+    // GSRP weekly MDE 5-day check-off sheet
+    const monday = new Date(); monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
+    const todayIdx = (new Date().getDay() + 6) % 7;
+    const weekDays = [0, 1, 2, 3, 4].map((d) => { const x = new Date(monday); x.setDate(monday.getDate() + d); return x; });
+    const KEYS = [['b', 'B'], ['l', 'L'], ['s', 'S']];
+    const dayTotals = weekDays.map(() => 0);
+    const weekRows = ROSTER.map((s) => {
+      const cells = [];
+      weekDays.forEach((d, di) => {
+        KEYS.forEach(([k, lab]) => {
+          let v = '';
+          if (di < todayIdx) { const abs = this.rnd(s.idx * 13 + di * 3) < 0.08; v = abs ? '—' : (this.rnd(s.idx * 7 + di * 5 + lab.charCodeAt(0)) < 0.94 ? '✓' : '·'); }
+          else if (di === todayIdx) v = cards.find((c) => c.sid === s.sid).gChecks[KEYS.findIndex((x) => x[0] === k)].on ? '✓' : '';
+          if (v === '✓') dayTotals[di]++;
+          cells.push({ v, style: v === '✓' ? 'color:#085D3A;font-weight:700' : (v === '—' ? 'color:#912018' : 'color:#94A3B8'), sep: lab === 'B' ? 'border-left:2px solid #E2E8F0' : '' });
+        });
+      });
+      return { name: s.name, ...this.pv(s), cells };
+    });
+    const signedWeek = (st.weekSigned || {})[A0.room];
+    const gsrpVals = {
+      gTabToday: (st.gTab || 'today') === 'today', gTabWeek: st.gTab === 'week',
+      gTabs: [['today', 'Today'], ['week', 'Weekly MDE check-off sheet']].map(([id, label]) => ({ label, on: (st.gTab || 'today') === id, style: (st.gTab || 'today') === id ? 'background:#0F172A;color:#FFFFFF' : 'background:transparent;color:#334155', pick: () => this.setState({ gTab: id }) })),
+      weekHead: weekDays.map((d, di) => ({ label: d.toLocaleDateString('en-US', { weekday: 'short', month: 'numeric', day: 'numeric' }) + (di === todayIdx ? ' (today)' : ''), total: dayTotals[di] })),
+      weekSub: weekDays.map(() => KEYS.map(([, lab]) => ({ lab, sep: lab === 'B' ? 'border-left:2px solid #E2E8F0' : '' }))).reduce((a, b) => a.concat(b), []),
+      weekRows, weekTotal: dayTotals.reduce((a, b) => a + b, 0),
+      weekRange: weekDays[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' – ' + weekDays[4].toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      weekSigned: !!signedWeek, weekNotSigned: !signedWeek,
+      weekSignedText: signedWeek ? 'Signed by ' + signedWeek.by + ' on ' + signedWeek.at + ' · sent to Brian Corbett for the reimbursement claim' : '',
+      weekOpen: !!st.weekOpen,
+      openWeek: () => this.setState({ weekOpen: true, sig: '', agree: false }),
+      closeWeek: () => this.setState({ weekOpen: false }),
+      signWeek: () => {
+        const ws = Object.assign({}, st.weekSigned); ws[A0.room] = { by: st.sig, at: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + this.nowTime() };
+        const row = { date: today, period: 'Weekly MDE 5-day check-off sheet', room: A0.room, present: ROSTER.length + ' students', breakdown: (dayTotals.reduce((a, b) => a + b, 0)) + ' reimbursable meals checked off this week', by: st.sig, time: this.nowTime() };
+        this.setState({ weekSigned: ws, weekOpen: false, subsNew: [row].concat(st.subsNew) });
+        this.log('Signed weekly MDE check-off sheet · ' + A0.room);
+        this.showToast('Weekly check-off sheet signed, dated and sent to Brian Corbett');
+      },
+      printWeek: () => { this.log('Printed MDE check-off sheet · ' + A0.room); this.showToast('MDE 5-day check-off sheet ready to print (PDF)'); },
+      checkAllBreakfast: () => { const c = JSON.parse(JSON.stringify(st.chk || { b: {}, l: {}, s: {} })); ROSTER.forEach((s) => { if (st.att[s.sid] !== 'absent') c.b[s.sid] = true; }); this.setState({ chk: c }); }
+    };
     return {
-      ...lateVals,
+      ...lateVals, ...gsrpVals,
       rTotal: ROSTER.length, cards, present, absent, recorded, locked, isGSRP, notGSRP: !isGSRP,
       tRoom: A0.room || 'Room 205', tGrade: A0.grade, tSchoolFull: A0.school + ' Elementary', tSigName: A0.sig || 'Your name',
       dueLabel: locked ? 'Submitted' : (late ? 'Past due' : 'Due by 9:00 AM'),
       dueStyle: locked ? 'background:#ECFDF3;color:#085D3A' : (late ? 'background:#FEF3F2;color:#912018' : 'background:#E6F6FA;color:#074F66'),
       dueText: isGSRP
-        ? 'GSRP: breakfast and lunch are served to every child who is present — just mark attendance.'
-        : 'Record breakfast, lunch and dinner for every child in one go. The kitchen plans the whole day from this count.',
+        ? 'Take morning attendance and submit it by 9:00 AM so the kitchen can prepare breakfast, lunch and supper. Check off meals as you serve them, take afternoon attendance, and sign the weekly sheet on Friday.'
+        : 'Breakfast is served in the classroom: check it off. Sign each child up for lunch, the after-school snack and the Supper Program (cafeteria). Everything goes to the kitchen by 9:00 AM.',
       showReminder: !locked,
       reminderText: late
         ? 'The ' + A0.room + ' meal count was due at 9:00 AM. The Food Service Admin has been notified — submit now.'
-        : 'Breakfast, lunch and dinner for ' + A0.room + ' are due by 9:00 AM.',
-      periodLabel: isGSRP ? 'Breakfast & lunch' : 'Breakfast, lunch & dinner', periodLower: isGSRP ? 'breakfast and lunch' : 'breakfast, lunch and dinner',
+        : (isGSRP ? 'Morning attendance for ' + A0.room + ' is due by 9:00 AM.' : 'Breakfast check-offs and lunch, snack and supper sign-ups for ' + A0.room + ' are due by 9:00 AM.'),
+      periodLabel: isGSRP ? 'GSRP morning attendance' : 'Breakfast check-off & sign-ups', periodLower: isGSRP ? 'breakfast, lunch and supper (family style)' : 'breakfast, lunch, snack and supper',
       mealSummary, optCounts: mealSummary.map((m) => ({ label: m.label + ': ' + m.text, n: '' })),
       allPresent: () => this.update((a) => { ROSTER.forEach((s) => { delete a[s.sid]; }); }),
-      fillLabel: 'Breakfast · Lunch A · Dinner A',
-      fillFirst: () => this.update((a, sl) => { ROSTER.forEach((s) => { const lateS = a[s.sid] === 'absent' && !!(st.late || {})[s.sid]; if (a[s.sid] === 'absent' && !lateS) return; this.DAY_MEALS.forEach((m) => { if (lateS && m.id === 'breakfast') return; sl[m.id] = sl[m.id] || {}; if (sl[m.id][s.sid] == null) sl[m.id][s.sid] = 0; }); }); }),
+      fillLabel: 'Breakfast served · Lunch A · no snack · no supper',
+      fillFirst: () => this.update((a, sl) => {
+        ROSTER.forEach((s) => {
+          const lateS = a[s.sid] === 'absent' && !!(st.late || {})[s.sid];
+          if (a[s.sid] === 'absent' && !lateS) return;
+          this.DAY_MEALS.forEach((m) => { if (lateS && m.id === 'breakfast') return; sl[m.id] = sl[m.id] || {}; if (sl[m.id][s.sid] == null) sl[m.id][s.sid] = this.FILL[m.id]; });
+        });
+      }),
       cantSubmit,
       submitStyle: cantSubmit ? 'background:#E2E8F0;color:#64748B;cursor:not-allowed' : 'background:#0A6E8C;color:#FFFFFF;cursor:pointer',
-      submitHint: locked ? 'Submitted and signed for today.' : (recorded < present ? (present - recorded) + ' student(s) still need all three meals picked.' : (lateMissing > 0 ? 'Pick lunch and dinner for the late arrival(s).' : 'Ready — you will review and sign before it is sent.' + (lateCount ? ' Includes ' + lateCount + ' late arrival(s), breakfast missed.' : ''))),
-      submitLabel: amended ? 'Send updated count' : 'Submit morning count',
-      lockedText: amended ? 'Updated count signed and sent.' : 'Morning count submitted and signed.',
+      submitHint: locked ? 'Submitted and signed for today.' : (recorded < present ? (present - recorded) + ' student(s) still need breakfast and all sign-ups.' : (lateMissing > 0 ? 'Finish the sign-ups for the late arrival(s).' : 'Ready — you will review and sign before it is sent.' + (lateCount ? ' Includes ' + lateCount + ' late arrival(s), breakfast missed.' : ''))),
+      submitLabel: amended ? 'Send updated count' : (isGSRP ? 'Submit morning attendance' : 'Submit 9:00 AM count'),
+      lockedText: amended ? 'Updated count signed and sent.' : (isGSRP ? 'Morning attendance submitted — the kitchen is preparing breakfast, lunch and supper.' : 'Morning count submitted and signed.'),
       amend: () => { const s2 = Object.assign({}, st.submitted); delete s2[RK]; const am = Object.assign({}, st.amended); am[RK] = true; this.setState({ submitted: s2, amended: am }); },
       openModal: () => this.setState({ modal: true, sig: '', agree: false }),
       closeModal: () => this.setState({ modal: false }),
@@ -1980,8 +2287,9 @@ class Component extends DCLogic {
       sign: () => {
         const s2 = Object.assign({}, st.submitted); s2[RK] = true;
         const lt2 = Object.assign({}, st.late || {}); ROSTER.forEach((x) => { if (lt2[x.sid]) lt2[x.sid] = Object.assign({}, lt2[x.sid], { sent: true }); });
-        const row = { date: new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }), period: (amended ? 'Updated · ' : '') + (isGSRP ? 'Breakfast & lunch' : 'Breakfast, lunch & dinner'), room: A0.room, present: present + ' of ' + ROSTER.length, breakdown: mealSummary.map((m) => m.label + ': ' + m.text).join(' | '), by: st.sig, time: this.nowTime() };
+        const row = { date: today, period: (amended ? 'Updated · ' : '') + (isGSRP ? 'GSRP morning attendance' : 'Breakfast check-off & sign-ups'), room: A0.room, present: present + ' of ' + ROSTER.length, breakdown: mealSummary.map((m) => m.label + ': ' + m.text).join(' | '), by: st.sig, time: this.nowTime() };
         this.setState({ submitted: s2, late: lt2, modal: false, done: true, subsNew: [row].concat(st.subsNew) });
+        this.log('Signed 9:00 AM count · ' + A0.room);
       },
       closeDone: () => this.setState({ done: false }),
       goHistory: () => this.go('history')
@@ -2069,15 +2377,15 @@ class Component extends DCLogic {
   mealFor(s, dayIdx, pi) {
     const r = this.rnd(s.idx * 31 + dayIdx * 7 + pi);
     if (this.rnd(s.idx * 13 + dayIdx) < 0.07) return 'Absent';
-    if (s.grade === 'GSRP Pre-K') return pi < 2 ? 'Served' : '—';
-    if (pi === 0) return r < 0.82 ? 'Breakfast' : 'Own';
+    if (s.grade === 'GSRP Pre-K') return pi === 2 ? '—' : 'Served';
+    if (pi === 0) return r < 0.85 ? 'Served' : 'Not taken';
     if (pi === 1) return r < 0.4 ? 'Lunch A' : (r < 0.72 ? 'Lunch B' : (r < 0.88 ? 'Salad Bar' : 'Own'));
-    if (pi === 2) return (s.latchkey || s.programs.length) ? (r < 0.85 ? 'Snack' : 'Own') : '—';
-    return s.latchkey ? (r < 0.5 ? 'Dinner A' : (r < 0.9 ? 'Dinner B' : 'Own')) : '—';
+    if (pi === 2) return (s.latchkey || s.programs.length) ? (r < 0.85 ? 'Snack' : 'No snack') : '—';
+    return s.latchkey ? (r < 0.85 ? 'Supper' : 'No supper') : '—';
   }
   chip(v) {
     if (v === 'Absent') return 'background:#FEF3F2;color:#912018';
-    if (v === 'Own' || v === 'Not served' || v === 'Not staying') return 'background:#F1F5F9;color:#334155';
+    if (v === 'Own' || v === 'Not served' || v === 'Not staying' || v === 'Not taken' || v === 'No snack' || v === 'No supper') return 'background:#F1F5F9;color:#334155';
     if (v === 'Missed (arrived late)') return 'background:#FFF4E5;color:#7A3E00';
     if (v === '—' || v === 'Not recorded yet') return 'background:transparent;color:#64748B';
     return 'background:#E6F6FA;color:#074F66';
@@ -2095,11 +2403,10 @@ class Component extends DCLogic {
     const isG = s.grade === 'GSRP Pre-K';
     const signedToday = !!st.submitted['day|' + s.room];
     const inEnr = Object.keys(st.enr).some((pi) => st.enr[pi][s.sid]);
-    const todayRows = [['breakfast', 'Breakfast'], ['lunch', 'Lunch'], ['snack', 'After-school snack'], ['dinner', 'Dinner']];
+    const todayRows = [['breakfast', 'Breakfast'], ['lunch', 'Lunch'], ['snack', 'After-school snack'], ['dinner', 'Supper']];
     const today = todayRows.map(([id, label], pi) => {
       let v;
-      if (id === 'snack') v = inEnr ? 'Snack (enrichment sign-in)' : '—';
-      else if (isG && id === 'dinner') v = '—';
+      if (id === 'snack' && (isG || !(regRoom || s.idx >= 200))) v = isG ? '—' : (inEnr ? 'Snack (enrichment sign-in)' : '—');
       else if (regRoom || s.idx >= 200) {
         const lt = (st.late || {})[s.sid];
         if (st.att[s.sid] === 'absent' && !(lt && id !== 'breakfast')) v = lt ? 'Missed (arrived late)' : 'Absent';
@@ -2121,6 +2428,7 @@ class Component extends DCLogic {
         guardians: [{ name: s.guardian, rel: 'Parent / guardian · authorized pick-up', phone: s.phone }, { name: 'Emergency contact on file', rel: 'Authorized pick-up', phone: '(313) 555-0199' }],
         programs: s.programs, noPrograms: !s.programs.length,
         latch: s.latchkey ? 'Enrolled · Mon–Fri' : 'Not enrolled',
+        optOut: !!s.photoOptOut,
         enrAtt: s.programs.length ? (() => { const tot = s.programs.length * 8; const pct = this.enrPct(s, 0); return Math.round(tot * pct / 100) + ' of ' + tot + ' sessions (' + pct + '%)'; })() : '—',
         stats: [
           { label: 'Meals served (10 days)', value: String(served) },
@@ -2146,13 +2454,14 @@ class Component extends DCLogic {
     const gRows = roomsG.map(({ r, i }) => {
       const absent = Math.floor(this.rnd(i + st.meal * 13) * 3);
       const present = r[4] - absent;
-      const noService = st.meal >= 2;
+      const noService = st.meal === 2;
       const served = noService ? 0 : present;
       const not = 0;
       gServed += served; gNot += not; gAbs += absent;
       const h = 7 + Math.floor(this.rnd(i) * 2), m = String(Math.floor(this.rnd(i + 3) * 50) + 5).padStart(2, '0');
-      return { room: r[1], school: r[0], grade: r[2], teacher: r[3], served: noService ? '—' : served, not: noService ? '—' : not, absent, total: served,
-        status: noService ? 'Not served in GSRP' : 'Signed ' + (h > 12 ? h - 12 : h) + ':' + m + (h >= 12 ? ' PM' : ' AM'),
+      const fr = noService ? ['—', '—', '—'] : [Math.round(served * 0.8), Math.round(served * 0.12), served - Math.round(served * 0.8) - Math.round(served * 0.12)];
+      return { room: r[1], school: r[0], grade: r[2], teacher: r[3], served: noService ? '—' : served, not: noService ? '—' : not, absent, total: served, fFree: fr[0], fRed: fr[1], fPaid: fr[2],
+        status: noService ? 'No snack in GSRP register' : 'Signed ' + (h > 12 ? h - 12 : h) + ':' + m + (h >= 12 ? ' PM' : ' AM'),
         statusText: noService ? 'No service' : 'Signed', statusStyle: 'color:#085D3A' };
     });
     const roomsK = rooms.filter((x) => x.r[5] !== 'GSRP');
@@ -2222,23 +2531,25 @@ class Component extends DCLogic {
       ...(() => {
         const LT = st.late || {};
         const sent = this.all().filter((s) => LT[s.sid] && LT[s.sid].sent && this.inSchool(s.school, s.room));
-        let lunch = 0, dinner = 0;
+        let lunch = 0, dinner = 0, snack = 0;
         sent.forEach((s) => {
-          if (s.grade === 'GSRP Pre-K') { lunch++; return; }
-          const l = (st.sel.lunch || {})[s.sid], d = (st.sel.dinner || {})[s.sid];
+          if (s.grade === 'GSRP Pre-K') { lunch++; dinner++; return; }
+          const l = (st.sel.lunch || {})[s.sid], d = (st.sel.dinner || {})[s.sid], k = (st.sel.snack || {})[s.sid];
           if (l != null && l < 3) lunch++;
-          if (d != null && d < 2) dinner++;
+          if (k === 0) snack++;
+          if (d === 0) dinner++;
         });
-        return { hasLateAdds: sent.length > 0, lateAddText: sent.length + (sent.length > 1 ? ' students' : ' student') + ' arrived after the 9:00 AM count: +' + lunch + ' lunch, +' + dinner + ' dinner, breakfast missed (' + sent.map((s) => s.name + ', ' + s.room).join('; ') + ')' };
+        return { hasLateAdds: sent.length > 0, lateAddText: sent.length + (sent.length > 1 ? ' students' : ' student') + ' arrived after the 9:00 AM count: +' + lunch + ' lunch, +' + snack + ' snack, +' + dinner + ' supper, breakfast missed (' + sent.map((s) => s.name + ', ' + s.room).join('; ') + ')' };
       })(),
       emailLabel: st.emailed ? 'Master report sent' : 'Email master report now',
-      emailNow: () => this.setState({ emailed: true }),
+      emailNow: () => { this.setState({ emailed: true }); this.log('Emailed master report to Brian Corbett, Chris and kitchen leads'); },
+      printAttendance: () => { this.log('Printed daily master attendance sheet'); this.showToast('Daily master attendance sheet ready to print (PDF)'); },
       openEmail: () => this.setState({ emailOpen: true }), closeEmail: () => this.setState({ emailOpen: false }),
       emailOpen: st.emailOpen,
       roomList: rooms.map(({ r }) => ({
         room: r[1] + ' · ' + r[2], school: r[0], teacher: r[3], count: r[4], type: r[5],
         typeStyle: r[5] === 'GSRP' ? 'background:#FFF4E5;color:#7A3E00' : (r[5] === 'Enrichment' ? 'background:#EAF2FF;color:#1D3F8A' : (r[5] === 'Latchkey' ? 'background:#F6E8E8;color:#6B1719' : 'background:#F1F5F9;color:#334155')),
-        meals: r[5] === 'GSRP' ? 'Breakfast · Lunch · Snack [rules TBD]' : (r[5] === 'Enrichment' || r[5] === 'Latchkey' ? 'Snack · Dinner' : 'Breakfast · Lunch')
+        meals: r[5] === 'GSRP' ? 'Breakfast · Lunch · Supper (family style, AM/PM attendance)' : (r[5] === 'Enrichment' || r[5] === 'Latchkey' ? 'Snack · Supper' : 'Breakfast check-off · Lunch, snack & supper sign-ups')
       }))
     };
   }
@@ -2258,7 +2569,7 @@ class Component extends DCLogic {
   vPrograms() {
     const st = this.state;
     const prog = this.PROGRAMS[st.program];
-    const roster = this.all().filter((s) => s.programs.indexOf(prog.name) >= 0 && (st.role === 'teacher' || this.inSchool(s.school, s.room)));
+    const roster = this.all().filter((s) => s.programs.indexOf(prog.name) >= 0 && (st.role === 'teacher' || st.role === 'program' || this.inSchool(s.school, s.room)));
     const marks = st.enr[st.program] || {};
     const enrRoster = roster.map((s) => {
       const here = !!marks[s.sid];
@@ -2267,7 +2578,7 @@ class Component extends DCLogic {
         toggle: () => { const e = JSON.parse(JSON.stringify(st.enr)); e[st.program][s.sid] = !here; this.setState({ enr: e }); } };
     });
     const enrBars = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map((d, i) => { const v = Math.max(1, Math.round(roster.length * (0.55 + this.rnd(i + st.program * 5) * 0.45))); return { d, v, h: 'height:' + Math.round(v / Math.max(1, roster.length) * 140) + 'px' }; });
-    const latchList = this.all().filter((s) => s.latchkey && (st.role === 'teacher' ? s.school === this.acc().school : this.inSchool(s.school, s.room)));
+    const latchList = this.all().filter((s) => s.latchkey && (st.role === 'teacher' ? s.school === this.acc().school : (st.role === 'program' ? s.school === (this.ACCOUNTS[st.acctOther] || {}).school : this.inSchool(s.school, s.room))));
     let inNow = 0, out = 0;
     const lk = latchList.map((s) => {
       const L = st.latch[s.sid] || {};
@@ -2282,29 +2593,34 @@ class Component extends DCLogic {
       };
     });
     return {
-      progTabs: this.PROGRAMS.map((p, i) => ({ name: p.name, meta: p.meta, on: st.program === i, style: st.program === i ? 'background:#1D3F8A;color:#FFFFFF;border-color:#1D3F8A' : 'background:#FFFFFF;color:#0F172A;border-color:#E2E8F0', pick: () => this.setState({ program: i }) })),
+      progTabs: this.PROGRAMS.map((p, i) => ({ i, p })).filter(({ p }) => st.role !== 'program' || ((this.ACCOUNTS[st.acctOther] || {}).programs || []).indexOf(p.name) >= 0).map(({ p, i }) => ({ name: p.name, meta: p.meta, on: st.program === i, style: st.program === i ? 'background:#1D3F8A;color:#FFFFFF;border-color:#1D3F8A' : 'background:#FFFFFF;color:#0F172A;border-color:#E2E8F0', pick: () => this.setState({ program: i }) })),
       prog, enrRoster, enrHere: enrRoster.filter((e) => e.here).length, enrTotal: enrRoster.length, enrBars,
       ...this.vCompare(roster),
-      lk, lkKpis: [{ label: 'Enrolled', value: String(latchList.length) }, { label: 'Checked in now', value: String(inNow) }, { label: 'Picked up', value: String(out) }, { label: 'Not arrived', value: String(latchList.length - inNow - out) }]
+      lk, lkKpis: [{ label: 'Enrolled', value: String(latchList.length) }, { label: 'Checked in now', value: String(inNow) }, { label: 'Picked up', value: String(out) }, { label: 'Not arrived', value: String(latchList.length - inNow - out) }, { label: 'Free / Reduced / Paid', value: ['Free', 'Reduced', 'Paid'].map((e) => latchList.filter((s) => s.elig === e).length).join(' / ') }]
     };
   }
 
   renderVals() {
     const st = this.state;
     const d = new Date();
-    const isTeacher = st.role === 'teacher';
+    const isTeacher = st.role === 'teacher', isAdminRole = st.role === 'admin', isKitchen = st.role === 'kitchen', isProgram = st.role === 'program';
+    const OTHER = this.ACCOUNTS[st.acctOther] || this.ACCOUNTS[0];
     const sc = st.screen;
     const item = (id, label, badge, badgeStyle) => ({ label, current: sc === id || (sc === 'profile' && st.back === id) ? 'page' : 'false', go: () => this.go(id), hasBadge: !!badge, badge: badge || '', badgeStyle: badgeStyle || '',
       style: (sc === id || (sc === 'profile' && st.back === id)) ? 'background:#E6F6FA;color:#074F66;font-weight:700' : 'background:transparent;color:#334155;font-weight:500' });
     const nav = isTeacher ? [
       { title: this.acc().room || 'My classroom', items: [item('register', 'Meal register'), item('students', 'My students'), item('history', 'My submissions')] },
       { title: 'After school', items: [item('latchkey', 'Latchkey', 'Free', 'background:#F6E8E8;color:#6B1719')] }
+    ] : isKitchen ? [
+      { title: 'Kitchen · ' + OTHER.school, items: [item('master', 'Today\'s counts'), item('dashboard', 'Overview')] }
+    ] : isProgram ? [
+      { title: 'My programs', items: [item('enrichment', 'Enrichment sign-in', 'Phase 2', 'background:#EAF2FF;color:#1D3F8A'), item('latchkey', 'Latchkey', 'Free', 'background:#F6E8E8;color:#6B1719')] }
     ] : [
       { title: 'Meals', items: [item('dashboard', 'Overview'), item('master', 'Master report'), item('students', 'Students'), item('rooms', 'Classrooms')] },
       { title: 'Programs', items: [item('enrichment', 'Enrichment', 'Phase 2', 'background:#EAF2FF;color:#1D3F8A'), item('latchkey', 'Latchkey', 'Free', 'background:#F6E8E8;color:#6B1719')] },
-      { title: 'Settings', items: [item('reminders', 'Reminders & reports'), item('modules', 'Modules')] }
+      { title: 'Settings', items: [item('reminders', 'Reminders & reports'), item('audit', 'Activity log'), item('modules', 'Modules')] }
     ];
-    const titles = { register: 'Meal register', profile: 'Student profile', history: 'My submissions', dashboard: 'Food Service overview', master: 'Master report', students: isTeacher ? 'My students' : 'Students', rooms: 'Classrooms', enrichment: 'District Enrichment Program', latchkey: 'Latchkey', reminders: 'Reminders & automatic reports', modules: 'Modules' };
+    const titles = { register: 'Meal register', profile: 'Student profile', history: 'My submissions', dashboard: 'Food Service overview', master: 'Master report', students: isTeacher ? 'My students' : 'Students', rooms: 'Classrooms', enrichment: 'Enrichment programs', audit: 'Activity log', latchkey: 'Latchkey', reminders: 'Reminders & automatic reports', modules: 'Modules' };
     const set = (i, key) => () => { const rem = st.rem.map((r) => Object.assign({}, r)); rem[i][key] = !rem[i][key]; this.setState({ rem }); };
     const CH_ON = 'background:#E6F6FA;color:#074F66;border-color:#0A6E8C', CH_OFF = 'background:#FFFFFF;color:#475569;border-color:#CBD5E1';
     const ACC = this.acc(), RN = this.roster().length;
@@ -2315,33 +2631,41 @@ class Component extends DCLogic {
       if (!em || !st.loginPw) { this.setState({ loginErr: 'Enter your school email and password, or tap a sample account below.' }); return; }
       if (ai < 0 || this.ACCOUNTS[ai].pw !== st.loginPw) { this.setState({ loginErr: 'That email and password don\'t match an account.' }); return; }
       const a = this.ACCOUNTS[ai];
-      this.setState({ loggedIn: true, loginErr: '', role: a.role, acct: a.role === 'teacher' ? ai : st.acct, screen: a.role === 'teacher' ? 'register' : 'dashboard', period: null, q: '' });
+      this.enter(a, ai);
     };
     const vals = Object.assign({},
       this.vRegister(), this.vProfile(), this.vAdmin(), this.vStudents(), this.vPrograms(), this.vForms(),
       {
         today: d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }),
         todayShort: d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
-        isLogin: !st.loggedIn, isApp: st.loggedIn, isTeacher, isAdmin: !isTeacher,
-        loginRoles: ['Teacher', 'Food Service Admin'].map((label, i) => ({ label, on: st.loginRole === i, style: st.loginRole === i ? 'background:#E6F6FA;color:#074F66;border-color:#0A6E8C' : 'background:#FFFFFF;color:#0F172A;border-color:#E2E8F0', pick: () => this.setState({ loginRole: i }) })),
+        isLogin: !st.loggedIn, isApp: st.loggedIn, isTeacher, isAdmin: isAdminRole, isKitchen, isProgram, isStaffView: isKitchen || isProgram, showSchoolSeg: isAdminRole, staffScope: isKitchen ? 'Kitchen lead · ' + OTHER.school + ' Elementary · read-only' : (isProgram ? 'Program staff · ' + (OTHER.programs || []).join(', ') + ' · latchkey' : ''),
+        loginRoles: ['Teacher', 'Food Service', 'Kitchen lead', 'Program staff'].map((label, i) => ({ label, on: st.loginRole === i, style: st.loginRole === i ? 'background:#E6F6FA;color:#074F66;border-color:#0A6E8C' : 'background:#FFFFFF;color:#0F172A;border-color:#E2E8F0', pick: () => this.setState({ loginRole: i }) })),
         loginEmail: st.loginEmail, loginPw: st.loginPw, loginSchool: st.loginSchool,
         onLoginEmail: (e) => this.setState({ loginEmail: e.target.value, loginErr: '' }),
         onLoginPw: (e) => this.setState({ loginPw: e.target.value, loginErr: '' }),
         onLoginSchool: (e) => this.setState({ loginSchool: e.target.value }),
         hasLoginErr: !!st.loginErr, loginErr: st.loginErr,
-        sampleAccts: this.ACCOUNTS.filter((a) => (st.loginRole === 0 ? a.role === 'teacher' : a.role === 'admin')).map((a) => ({
+        sampleAccts: this.ACCOUNTS.filter((a) => a.role === ['teacher', 'admin', 'kitchen', 'program'][st.loginRole || 0]).map((a) => ({
           name: a.name, email: a.email, pw: a.pw, ini: a.ini, avStyle: 'background:' + a.color,
-          where: a.role === 'teacher' ? a.school + ' · ' + a.room + ' (' + a.grade + ')' : 'Both schools',
+          where: a.role === 'teacher' ? a.school + ' · ' + a.room + ' (' + a.grade + ')' : (a.role === 'admin' ? 'Both schools' : (a.role === 'kitchen' ? a.school + ' kitchen · read-only' : (a.programs || []).join(', ') + ' + latchkey')),
           fill: () => this.setState({ loginEmail: a.email, loginPw: a.pw, loginErr: '', loginSchool: a.school })
         })),
         loginFaces: this.all().slice(0, 7).map((s) => this.pv(s)),
         signIn: tryLogin,
+        signInGoogle: () => {
+          const em = (st.loginEmail || '').trim().toLowerCase();
+          const ai = this.ACCOUNTS.findIndex((x) => x.email === em);
+          if (ai < 0) { this.setState({ loginErr: 'Tap a sample account first — Google sign-in uses that district account.' }); return; }
+          const a = this.ACCOUNTS[ai];
+          this.enter(a, ai);
+          this.setState((s2) => ({ audit: [{ time: this.nowTime(), user: a.name, action: 'Signed in', via: 'Google sign-in' }].concat(s2.audit || []) }));
+        },
         signOut: () => this.setState({ loggedIn: false, modal: false, done: false, emailOpen: false, formMode: null, form: null, photoOpen: false, importOpen: false, roomForm: null, loginPw: '' }),
-        switchRole: () => this.setState({ role: isTeacher ? 'admin' : 'teacher', screen: isTeacher ? 'dashboard' : 'register', modal: false, done: false, emailOpen: false, formMode: null, form: null, photoOpen: false, importOpen: false, roomForm: null }),
-        otherRole: isTeacher ? 'Food Service Admin' : 'Teacher (' + ACC.room + ')',
-        userName: isTeacher ? ACC.name : 'Food Service Admin',
-        userInitials: isTeacher ? ACC.ini : 'FS',
-        userAvatarStyle: 'background:' + (isTeacher ? ACC.color : '#6B1719'),
+        switchRole: () => this.setState({ role: isAdminRole ? 'teacher' : 'admin', screen: isAdminRole ? 'register' : 'dashboard', school: isAdminRole ? st.school : 0, modal: false, done: false, emailOpen: false, formMode: null, form: null, photoOpen: false, importOpen: false, roomForm: null }),
+        otherRole: isAdminRole ? 'Teacher (' + ACC.room + ')' : 'Food Service (Brian)',
+        userName: isTeacher ? ACC.name : (isAdminRole ? 'Brian Corbett · Food Service' : OTHER.name + ' · ' + (isKitchen ? 'Kitchen lead' : 'Program staff')),
+        userInitials: isTeacher ? ACC.ini : (isAdminRole ? 'BC' : OTHER.ini),
+        userAvatarStyle: 'background:' + (isTeacher ? ACC.color : (isAdminRole ? '#6B1719' : OTHER.color)),
         roomF: st.roomF || 'all', roomFiltered: !!st.roomF && st.roomF !== 'all',
         onRoomF: (e) => this.setState({ roomF: e.target.value, emailed: false }),
         clearRoomF: () => this.setState({ roomF: 'all' }),
@@ -2349,7 +2673,7 @@ class Component extends DCLogic {
         schoolSeg: this.seg(['Both', 'Beacon', 'Tyrone'], st.school, (i) => this.setState({ school: i, roomF: 'all', emailed: false }), 'background:#FFFFFF;color:#0F172A;box-shadow:0 1px 2px rgba(15,23,42,0.15)', 'background:transparent;color:#475569'),
         nav, screenTitle: titles[sc] || 'MealTrack',
         isRegister: sc === 'register', isProfile: sc === 'profile', isHistory: sc === 'history', isDashboard: sc === 'dashboard', isMaster: sc === 'master',
-        isStudents: sc === 'students', isRooms: sc === 'rooms', isEnrichment: sc === 'enrichment', isLatchkey: sc === 'latchkey', isReminders: sc === 'reminders', isModules: sc === 'modules',
+        isStudents: sc === 'students', isRooms: sc === 'rooms', isEnrichment: sc === 'enrichment', isLatchkey: sc === 'latchkey', isReminders: sc === 'reminders', isModules: sc === 'modules', isAudit: sc === 'audit', auditRows: st.audit || [],
         modal: st.modal, done: st.done,
         subs: st.subsNew.filter((r) => r.room === ACC.room).concat(prior),
         remRows: st.rem.map((r, i) => Object.assign({}, r, { tid: 'rem-' + i, trackStyle: r.on ? 'background:#0A6E8C;justify-content:flex-end' : 'background:#CBD5E1;justify-content:flex-start', emailStyle: r.email ? CH_ON : CH_OFF, smsStyle: r.sms ? CH_ON : CH_OFF, toggle: set(i, 'on'), toggleEmail: set(i, 'email'), toggleSms: set(i, 'sms'), onTime: (e) => { const rem = st.rem.map((x) => Object.assign({}, x)); rem[i].time = e.target.value; this.setState({ rem }); } })),
