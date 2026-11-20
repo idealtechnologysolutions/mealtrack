@@ -1419,13 +1419,38 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <select id="pf-freq" value="{{pf.freq}}" onChange="{{onPfFreq}}" style="height: 44px; padding: 0 8px; border: 1px solid #CBD5E1; border-radius: 10px; font: inherit; background: #FFFFFF"><option value="Weekly">Weekly</option><option value="Every 2 weeks">Every 2 weeks</option><option value="Monthly">Monthly</option><option value="Yearly">Yearly</option></select>
 </div>
 </div>
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 12px; border: 1px solid #E2E8F0; background: #F8FAFC">
+<span style="font-size: 13px; font-weight: 700">Step 1 · Confirm it's you</span>
+<sc-if value="{{pfNotVerified}}" hint-placeholder-val="{{ true }}">
+<span style="font-size: 13px; color: #475569; line-height: 1.45">We'll text a 6-digit code to the phone number the school has on file, {{pPhone}}.</span>
+<sc-if value="{{pfNoCode}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{pfSendCode}}" style="height: 44px; border-radius: 10px; border: 1px solid #0A6E8C; background: #FFFFFF; color: #0A6E8C; font-weight: 700; font-size: 14px; cursor: pointer">Text me a code</button>
+</sc-if>
+<sc-if value="{{pfCodeSent}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; gap: 6px">
+<label for="pf-code" style="position: absolute; left: -9999px">6-digit code</label>
+<input id="pf-code" type="text" inputmode="numeric" autocomplete="one-time-code" value="{{pf.code}}" onChange="{{onPfCode}}" placeholder="6-digit code" style="flex: 1; min-width: 0; height: 44px; padding: 0 12px; border: 1px solid #CBD5E1; border-radius: 10px; font: inherit; letter-spacing: 0.2em">
+<button type="button" onClick="{{pfVerify}}" style="height: 44px; padding: 0 16px; border-radius: 10px; border: 0; background: #0A6E8C; color: #FFFFFF; font-weight: 700; font-size: 14px; cursor: pointer">Verify</button>
+</div>
+<span style="font-size: 12px; color: #64748B">Demo code: 482913</span>
+</sc-if>
+</sc-if>
+<sc-if value="{{pfVerified}}" hint-placeholder-val="{{ false }}">
+<span style="font-size: 13px; color: #085D3A; font-weight: 600">Verified by text code to {{pPhone}}</span>
+</sc-if>
+</div>
+<span style="font-size: 13px; font-weight: 700">Step 2 · Sign</span>
 <div style="display: flex; flex-direction: column; gap: 6px">
-<label for="pf-sig" style="font-size: 13px; font-weight: 700">Type your full name to sign</label>
+<label for="pf-sig" style="font-size: 13px; font-weight: 700">Type your full legal name to sign</label>
 <input id="pf-sig" type="text" value="{{pf.sig}}" onChange="{{onPfSig}}" placeholder="e.g. {{pName}}" autocomplete="name" style="height: 48px; padding: 0 14px; border: 1px solid #94A3B8; border-radius: 10px; font-size: 18px; font-family: 'Space Grotesk', sans-serif; font-style: italic">
 </div>
 <label style="display: flex; align-items: flex-start; gap: 10px; font-size: 13px; cursor: pointer; line-height: 1.45">
 <input type="checkbox" checked="{{pf.agree}}" onChange="{{onPfAgree}}" style="width: 20px; height: 20px; accent-color: #0A6E8C; flex: none; margin-top: 1px">
 <span>I certify that all information on this form is true and that all income is reported.</span>
+</label>
+<label style="display: flex; align-items: flex-start; gap: 10px; font-size: 13px; cursor: pointer; line-height: 1.45">
+<input type="checkbox" checked="{{pf.esign}}" onChange="{{onPfEsign}}" style="width: 20px; height: 20px; accent-color: #0A6E8C; flex: none; margin-top: 1px">
+<span>I agree to sign electronically. My electronic signature is legally binding, the same as my handwritten signature. I can ask the school for a paper form instead.</span>
 </label>
 <sc-if value="{{pfHasErr}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; color: #912018">{{pfErr}}</span></sc-if>
 <button type="button" onClick="{{pfSubmit}}" style="height: 52px; border-radius: 12px; border: 0; background: #6B1719; color: #FFFFFF; font-size: 16px; font-weight: 700; cursor: pointer">Sign &amp; submit</button>
@@ -1586,13 +1611,22 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 </div>
 <p style="margin: 0; font-size: 14px; line-height: 1.5; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px">I attest that the students listed above elected to receive {{periodLower}} on {{today}} as recorded, and that students marked absent did not receive a meal for this period.</p>
 <div style="display: flex; flex-direction: column; gap: 6px">
-<label for="sig" style="font-size: 13px; font-weight: 600">Type your full name as your digital signature</label>
+<label for="sig" style="font-size: 13px; font-weight: 600">Type your full legal name to sign</label>
 <input id="sig" type="text" value="{{sig}}" onChange="{{onSig}}" placeholder="e.g. {{tSigName}}" autocomplete="name" style="height: 48px; padding: 0 14px; border: 1px solid #94A3B8; border-radius: 10px; font-size: 18px; font-family: 'Space Grotesk', sans-serif; font-style: italic; color: #0F172A">
 </div>
 <label style="display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer; min-height: 44px">
 <input type="checkbox" checked="{{agree}}" onChange="{{onAgree}}" style="width: 20px; height: 20px; accent-color: #0A6E8C">
 <span>I confirm this {{periodLower}} count is accurate.</span>
 </label>
+<sc-if value="{{sigMismatch}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; color: #912018">Type your name as it is on file: {{tSigName}}</span></sc-if>
+<label style="display: flex; align-items: flex-start; gap: 10px; font-size: 14px; cursor: pointer; line-height: 1.45">
+<input type="checkbox" checked="{{esign}}" onChange="{{onEsign}}" style="width: 20px; height: 20px; accent-color: #0A6E8C; flex: none; margin-top: 1px">
+<span>I agree to sign electronically. My electronic signature is legally binding, the same as my handwritten signature.</span>
+</label>
+<div style="display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; background: #F1F5F9; font-size: 12px; color: #334155; line-height: 1.5">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: none; margin-top: 1px"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+<span>Signing as <strong>{{signerEmail}}</strong>, identity verified by district Google sign-in. Your name, the time, this device and a tamper-evident seal of the record are saved with the signature.</span>
+</div>
 </div>
 <div style="padding: 16px 24px; border-top: 1px solid #E2E8F0; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; background: #F8FAFC">
 <button type="button" onClick="{{closeModal}}" style="height: 48px; padding: 0 20px; border-radius: 12px; border: 1px solid #CBD5E1; background: #FFFFFF; color: #0F172A; font-weight: 600; font-size: 15px; cursor: pointer">Back to register</button>
@@ -1614,6 +1648,7 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <li>{{tRoom}} report emailed to the Food Service Admin.</li>
 <li>Counts added to today's {{tSchoolFull}} master report.</li>
 <li>Saved to My submissions and to Reports for charts.</li>
+<li>Electronic signature <strong>{{lastSigId}}</strong> saved and sealed (SHA-256 {{lastSigHash}}).</li>
 <sc-if value="{{doneLate}}" hint-placeholder-val="{{ false }}"><li><strong>Marked late ({{doneLateAt}}).</strong> Food Service and the kitchen were alerted in the app, by email and by text.</li></sc-if>
 </ul>
 <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end">
@@ -1679,13 +1714,22 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 </sc-for>
 <p style="margin: 0; font-size: 14px; line-height: 1.5; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px">I attest that the students above arrived after the 9:00 AM count, did not receive breakfast, and elected to receive the meals shown. This update is added to today's room and master reports.</p>
 <div style="display: flex; flex-direction: column; gap: 6px">
-<label for="late-sig" style="font-size: 13px; font-weight: 600">Type your full name as your digital signature</label>
+<label for="late-sig" style="font-size: 13px; font-weight: 600">Type your full legal name to sign</label>
 <input id="late-sig" type="text" value="{{sig}}" onChange="{{onSig}}" placeholder="e.g. {{tSigName}}" autocomplete="name" style="height: 48px; padding: 0 14px; border: 1px solid #94A3B8; border-radius: 10px; font-size: 18px; font-family: 'Space Grotesk', sans-serif; font-style: italic; color: #0F172A">
 </div>
 <label style="display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer; min-height: 44px">
 <input type="checkbox" checked="{{agree}}" onChange="{{onAgree}}" style="width: 20px; height: 20px; accent-color: #0A6E8C">
 <span>I confirm this late-arrival update is accurate.</span>
 </label>
+<sc-if value="{{sigMismatch}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; color: #912018">Type your name as it is on file: {{tSigName}}</span></sc-if>
+<label style="display: flex; align-items: flex-start; gap: 10px; font-size: 14px; cursor: pointer; line-height: 1.45">
+<input type="checkbox" checked="{{esign}}" onChange="{{onEsign}}" style="width: 20px; height: 20px; accent-color: #0A6E8C; flex: none; margin-top: 1px">
+<span>I agree to sign electronically. My electronic signature is legally binding, the same as my handwritten signature.</span>
+</label>
+<div style="display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; background: #F1F5F9; font-size: 12px; color: #334155; line-height: 1.5">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: none; margin-top: 1px"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+<span>Signing as <strong>{{signerEmail}}</strong>, identity verified by district Google sign-in. Your name, the time, this device and a tamper-evident seal of the record are saved with the signature.</span>
+</div>
 </div>
 <div style="padding: 16px 24px; border-top: 1px solid #E2E8F0; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; background: #F8FAFC">
 <button type="button" onClick="{{closeLate}}" style="height: 48px; padding: 0 20px; border-radius: 12px; border: 1px solid #CBD5E1; background: #FFFFFF; color: #0F172A; font-weight: 600; font-size: 15px; cursor: pointer">Back to register</button>
@@ -1707,13 +1751,22 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <span style="font-size: 15px; font-weight: 700">{{weekTotal}} reimbursable meals checked off this week</span>
 <p style="margin: 0; font-size: 14px; line-height: 1.5; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px">I certify that the meals checked off on this sheet were served family style, that each child received at least 3 of the 5 meal components with skim white milk, and that attendance was taken in the morning and afternoon. Dated {{today}}.</p>
 <div style="display: flex; flex-direction: column; gap: 6px">
-<label for="week-sig" style="font-size: 13px; font-weight: 600">Type your full name as your digital signature</label>
+<label for="week-sig" style="font-size: 13px; font-weight: 600">Type your full legal name to sign</label>
 <input id="week-sig" type="text" value="{{sig}}" onChange="{{onSig}}" placeholder="e.g. {{tSigName}}" autocomplete="name" style="height: 48px; padding: 0 14px; border: 1px solid #94A3B8; border-radius: 10px; font-size: 18px; font-family: 'Space Grotesk', sans-serif; font-style: italic; color: #0F172A">
 </div>
 <label style="display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer; min-height: 44px">
 <input type="checkbox" checked="{{agree}}" onChange="{{onAgree}}" style="width: 20px; height: 20px; accent-color: #0A6E8C">
 <span>I confirm this sheet is complete and accurate.</span>
 </label>
+<sc-if value="{{sigMismatch}}" hint-placeholder-val="{{ false }}"><span role="alert" style="font-size: 13px; color: #912018">Type your name as it is on file: {{tSigName}}</span></sc-if>
+<label style="display: flex; align-items: flex-start; gap: 10px; font-size: 14px; cursor: pointer; line-height: 1.45">
+<input type="checkbox" checked="{{esign}}" onChange="{{onEsign}}" style="width: 20px; height: 20px; accent-color: #0A6E8C; flex: none; margin-top: 1px">
+<span>I agree to sign electronically. My electronic signature is legally binding, the same as my handwritten signature.</span>
+</label>
+<div style="display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; background: #F1F5F9; font-size: 12px; color: #334155; line-height: 1.5">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: none; margin-top: 1px"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+<span>Signing as <strong>{{signerEmail}}</strong>, identity verified by district Google sign-in. Your name, the time, this device and a tamper-evident seal of the record are saved with the signature.</span>
+</div>
 </div>
 <div style="padding: 16px 24px; border-top: 1px solid #E2E8F0; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; background: #F8FAFC">
 <button type="button" onClick="{{closeWeek}}" style="height: 48px; padding: 0 20px; border-radius: 12px; border: 1px solid #CBD5E1; background: #FFFFFF; color: #0F172A; font-weight: 600; font-size: 15px; cursor: pointer">Cancel</button>
@@ -1946,6 +1999,14 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <div><strong>Household size:</strong> {{fv.size}}</div>
 <div><strong>Case number / income:</strong> {{fv.basis}}</div>
 <div style="padding-top: 10px; border-top: 1px solid #E2E8F0"><strong>Signed:</strong> <span style="font-family: 'Space Grotesk', sans-serif; font-style: italic; font-size: 16px">{{fv.sig}}</span> · {{fv.submitted}} · {{fv.via}}</div>
+<div style="margin-top: 4px; padding: 12px; border: 1.5px solid #0A6E8C; border-radius: 8px; display: flex; flex-direction: column; gap: 4px; font-size: 12px">
+<strong style="font-size: 13px; color: #074F66">Electronic signature certificate</strong>
+<span><strong>Signature ID:</strong> {{fvCert.id}}</span>
+<span><strong>Signer:</strong> {{fv.sig}} · identity verified by {{fvCert.verified}}</span>
+<span><strong>Consent to sign electronically:</strong> {{fvCert.consent}}</span>
+<span><strong>Signed at:</strong> {{fv.submitted}} (America/Detroit) · device {{fvCert.device}}</span>
+<span><strong>Document seal (SHA-256):</strong> {{fvCert.hash}} · <span style="color: #085D3A; font-weight: 700">{{fvCert.status}}</span></span>
+</div>
 </div>
 </div>
 <div style="padding: 16px 24px; border-top: 1px solid #E2E8F0; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; background: #F8FAFC">
@@ -2311,7 +2372,7 @@ class Component extends DCLogic {
         { id: 'EBF-1037', guardian: 'Keisha Grant', phone: '(313) 555-0115', kids: ['Aaliyah Grant (Beacon · Gr 2)'], sids: ['20023826'], size: '5', basis: '$3,400 monthly', sig: 'Keisha Grant', via: 'Text link · phone', submitted: 'Nov 16, 8:27 PM', status: 'Approved' }
       ],
       missing: ['20025530', '20025487', '20027391'], missingAt: 'Nov 18', missUp: false, missText: true, formView: null,
-      pForm: { size: '4', caseNo: '', income: '', freq: 'Monthly', extra: [], addName: '', addSchool: 'Tyrone Elementary', sig: '', agree: false, done: null }, pfErr: '', pWeek: {}, pPicked: {},
+      pForm: { size: '4', caseNo: '', income: '', freq: 'Monthly', extra: [], addName: '', addSchool: 'Tyrone Elementary', sig: '', agree: false, esign: false, code: '', codeSent: false, verified: false, done: null }, pfErr: '', pWeek: {}, pPicked: {},
       audit: [
         { time: '8:52 AM', user: 'Mr. Victor Lane', action: 'Signed 9:00 AM count · Room 210', via: 'Google sign-in' },
         { time: '8:47 AM', user: 'Ms. Dana Owens', action: 'Submitted GSRP morning attendance · Room 101', via: 'Google sign-in' },
@@ -2507,6 +2568,13 @@ class Component extends DCLogic {
   }
   // Brian Corbett meeting (Nov 20): change alerts, menu-change broadcast, Educational Benefit Form,
   // missing-form alerts to teachers, parent weekly lunch sign-up (if budget allows) and NutriSlice menus.
+  // Legal electronic signature (ESIGN Act / Michigan UETA): identity, consent, intent, a tamper-evident seal and an audit trail.
+  seal(text) {
+    let h1 = 0x811c9dc5, h2 = 0x01000193;
+    for (let i = 0; i < text.length; i++) { h1 = Math.imul(h1 ^ text.charCodeAt(i), 16777619) >>> 0; h2 = Math.imul(h2 + text.charCodeAt(i), 2246822519) >>> 0; }
+    const hex = (h1.toString(16).padStart(8, '0') + h2.toString(16).padStart(8, '0'));
+    return { id: 'SIG-' + hex.slice(0, 6).toUpperCase(), hash: hex.slice(0, 4) + '…' + hex.slice(-6) };
+  }
   pushAlert(a) {
     this.setState((s2) => ({ alerts: [Object.assign({ time: this.nowTime(), ch: 'In-app · Email · Text', read: false }, a)].concat(s2.alerts || []) }));
   }
@@ -2614,7 +2682,7 @@ class Component extends DCLogic {
       hasMyMissing: st.role === 'teacher' && myMissing.length > 0, myMissingCount: myMissing.length + (myMissing.length > 1 ? ' students' : ' student'),
       myMissing: myMissing.map((s) => ({ name: s.name, ...this.pv(s) })),
       remindMyFamilies: () => { this.log('Texted form reminder to ' + myMissing.length + ' families · ' + A0.room); this.showToast('Form link texted to ' + myMissing.length + (myMissing.length > 1 ? ' families' : ' family')); },
-      hasFormView: !!fv, fvDup: !!fv && !!fv.dupOf && fv.status === 'Pending', fvDupKids: fv && fv.dupOf ? kidsText(forms.find((x) => x.id === fv.dupOf) || { kids: [] }) : '', fvApprovable: !!fv && fv.status === 'Pending' && !fv.dupOf, fvElig: st.fvElig || 'Free', onFvElig: (e) => this.setState({ fvElig: e.target.value }), fv: fv ? Object.assign({}, fv, { kidsText: kidsText(fv) }) : {}, fvStatusStyle: fv ? stStyle(fv.status) : '', fvPending: !!fv && fv.status === 'Pending',
+      hasFormView: !!fv, fvCert: fv ? Object.assign({ consent: fv.via === 'Paper form (scanned)' ? 'No · wet ink on paper, scanned' : 'Yes, given before signing', verified: fv.via === 'MiStar parent portal' ? 'MiStar parent portal login' : (fv.via === 'Paper form (scanned)' ? 'wet ink signature' : 'text code to ' + fv.phone), device: fv.via === 'Paper form (scanned)' ? '—' : 'Android · Chrome', status: 'Seal verified · unchanged since signing' }, fv.cert || this.seal(fv.id + '|' + fv.sig + '|' + fv.submitted)) : {}, fvDup: !!fv && !!fv.dupOf && fv.status === 'Pending', fvDupKids: fv && fv.dupOf ? kidsText(forms.find((x) => x.id === fv.dupOf) || { kids: [] }) : '', fvApprovable: !!fv && fv.status === 'Pending' && !fv.dupOf, fvElig: st.fvElig || 'Free', onFvElig: (e) => this.setState({ fvElig: e.target.value }), fv: fv ? Object.assign({}, fv, { kidsText: kidsText(fv) }) : {}, fvStatusStyle: fv ? stStyle(fv.status) : '', fvPending: !!fv && fv.status === 'Pending',
       closeFormView: () => this.setState({ formView: null }),
       printForm: () => { this.showToast(fv.id + '.pdf downloaded'); },
       approveForm: () => {
@@ -2636,15 +2704,22 @@ class Component extends DCLogic {
       pDoneText: pf.done ? 'Signed by ' + pf.done.sig + ' on ' + pf.done.at + ' for ' + pf.done.kids + '. Harper Woods Food Service will review it. You don\'t need to send a paper form.' : '',
       onPfAdd: setPf('addName'), onPfAddSchool: setPf('addSchool'), onPfSize: setPf('size'), onPfCase: setPf('caseNo'), onPfIncome: setPf('income'), onPfFreq: setPf('freq'), onPfSig: setPf('sig'),
       onPfAgree: (e) => this.setState({ pForm: Object.assign({}, st.pForm, { agree: e.target.checked }), pfErr: '' }),
+      onPfEsign: (e) => this.setState({ pForm: Object.assign({}, st.pForm, { esign: e.target.checked }), pfErr: '' }),
+      onPfCode: setPf('code'), pPhone: P.phone || '',
+      pfVerified: !!pf.verified, pfNotVerified: !pf.verified, pfCodeSent: !!pf.codeSent, pfNoCode: !pf.codeSent,
+      pfSendCode: () => { this.setState({ pForm: Object.assign({}, st.pForm, { codeSent: true }) }); this.showToast('Code texted to ' + P.phone + ' (demo code 482913)'); },
+      pfVerify: () => { if ((pf.code || '').replace(/\D/g, '') === '482913') this.setState({ pForm: Object.assign({}, st.pForm, { verified: true }), pfErr: '' }); else this.setState({ pfErr: 'That code doesn\'t match. Check the text and try again.' }); },
       pfAddKid: () => { const n = (pf.addName || '').trim(); if (n.split(' ').length < 2) { this.setState({ pfErr: 'Enter the child\'s first and last name.' }); return; } this.setState({ pForm: Object.assign({}, st.pForm, { extra: (pf.extra || []).concat([{ name: n, school: pf.addSchool }]), addName: '' }), pfErr: '' }); },
       pfHasErr: !!st.pfErr, pfErr: st.pfErr || '',
       pfSubmit: () => {
         if (!(pf.caseNo || '').trim() && !(pf.income || '').trim()) { this.setState({ pfErr: 'Enter a case number or your household income.' }); return; }
-        if ((pf.sig || '').trim().length < 3) { this.setState({ pfErr: 'Type your full name to sign.' }); return; }
+        if (!pf.verified) { this.setState({ pfErr: 'Confirm it\'s you with the text code first (step 1).' }); return; }
+        if ((pf.sig || '').trim().split(/\s+/).length < 2) { this.setState({ pfErr: 'Type your full legal name (first and last) to sign.' }); return; }
         if (!pf.agree) { this.setState({ pfErr: 'Check the box to certify the form.' }); return; }
+        if (!pf.esign) { this.setState({ pfErr: 'Check the box to agree to sign electronically.' }); return; }
         const at = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + this.nowTime();
         const kids = myKids.map((s) => s.name + ' (' + s.school + ' · ' + s.grade.replace('Grade ', 'Gr ') + ')').concat((pf.extra || []).map((k) => k.name + ' (' + k.school.replace(' Elementary', '') + ')'));
-        const row = { id: 'EBF-' + (1043 + forms.length), guardian: P.sig, phone: P.phone, kids, sids: myKids.map((s) => s.sid), size: pf.size, basis: (pf.caseNo || '').trim() ? 'Case number ' + pf.caseNo.trim() : '$' + pf.income.trim() + ' ' + pf.freq.toLowerCase(), sig: pf.sig.trim(), via: 'Text link · phone', submitted: at, status: 'Pending', dupOf: (forms.find((f) => f.phone === P.phone && f.status !== 'Merged') || {}).id };
+        const row = { id: 'EBF-' + (1043 + forms.length), guardian: P.sig, phone: P.phone, kids, sids: myKids.map((s) => s.sid), size: pf.size, basis: (pf.caseNo || '').trim() ? 'Case number ' + pf.caseNo.trim() : '$' + pf.income.trim() + ' ' + pf.freq.toLowerCase(), sig: pf.sig.trim(), via: 'Text link · phone', submitted: at, status: 'Pending', cert: Object.assign(this.seal(P.phone + '|' + pf.sig + '|' + at + '|' + kids.join()), { verified: 'text code to ' + P.phone, device: 'iPhone · Safari' }), dupOf: (forms.find((f) => f.phone === P.phone && f.status !== 'Merged') || {}).id };
         this.setState({ bforms: [row].concat(forms), pForm: Object.assign({}, st.pForm, { done: { sig: pf.sig.trim(), at, kids: kids.length + (kids.length > 1 ? ' children' : ' child') } }), pfErr: '' });
         this.setState((s2) => ({ audit: [{ time: this.nowTime(), user: P.sig + ' (parent)', action: 'Submitted Educational Benefit Form ' + row.id, via: 'Text link' }].concat(s2.audit || []) }));
       },
@@ -2782,7 +2857,8 @@ class Component extends DCLogic {
          { label: 'Snack', text: gSnack + ' served' + (lateCount ? ' (incl. ' + lateCount + ' late)' : '') }]
       : MEALS.map((m) => ({ label: m.short, text: m.opts.map((o, i) => counts[m.id][i] + ' ' + o).join(' · ') }));
     const cantSubmit = locked || recorded < present || lateMissing > 0;
-    const cantSign = st.sig.trim().length < 3 || !st.agree;
+    const sigOk = st.sig.trim().toLowerCase().replace(/\s+/g, ' ') === (A0.sig || '').toLowerCase();
+    const cantSign = !sigOk || !st.agree || !st.esign;
     const amended = !!(st.amended || {})[RK];
     const LATE = st.late || {};
     const latePending = ROSTER.filter((s) => st.att[s.sid] === 'absent' && LATE[s.sid] && !LATE[s.sid].sent);
@@ -2799,12 +2875,13 @@ class Component extends DCLogic {
       lateNotReady: !lateReady,
       lateBtnStyle: lateReady ? 'background:#7A3E00;color:#FFFFFF;cursor:pointer' : 'background:#E2E8F0;color:#64748B;cursor:not-allowed',
       lateOpen: !!st.lateOpen, lateRows,
-      openLate: () => this.setState({ lateOpen: true, sig: '', agree: false }),
+      openLate: () => this.setState({ lateOpen: true, sig: '', agree: false, esign: false }),
       closeLate: () => this.setState({ lateOpen: false }),
       signLate: () => {
         const lt = Object.assign({}, LATE);
         latePending.forEach((s) => { lt[s.sid] = Object.assign({}, lt[s.sid], { sent: true }); });
-        const row = { date: today, period: 'Late-arrival update', room: A0.room, present: '+' + latePending.length + ' late', breakdown: lateRows.map((r) => r.name + ': ' + r.meals).join(' | '), by: st.sig, time: this.nowTime() };
+        const sl1 = this.seal(A0.email + '|late|' + today + '|' + this.nowTime() + '|' + lateRows.map((r) => r.name).join());
+        const row = { date: today, period: 'Late-arrival update', room: A0.room, present: '+' + latePending.length + ' late', breakdown: lateRows.map((r) => r.name + ': ' + r.meals).join(' | '), by: st.sig + ' · ' + sl1.id, time: this.nowTime() };
         this.setState({ late: lt, lateOpen: false, subsNew: [row].concat(st.subsNew) });
         this.log('Signed late-arrival update · ' + A0.room + ' (' + latePending.length + ')');
         const lunchN = isGSRP ? latePending.length : latePending.filter((x) => (st.sel.lunch || {})[x.sid] !== 3).length;
@@ -2842,11 +2919,12 @@ class Component extends DCLogic {
       weekSigned: !!signedWeek, weekNotSigned: !signedWeek,
       weekSignedText: signedWeek ? 'Signed by ' + signedWeek.by + ' on ' + signedWeek.at + ' · sent to Brian Corbett for the reimbursement claim' : '',
       weekOpen: !!st.weekOpen,
-      openWeek: () => this.setState({ weekOpen: true, sig: '', agree: false }),
+      openWeek: () => this.setState({ weekOpen: true, sig: '', agree: false, esign: false }),
       closeWeek: () => this.setState({ weekOpen: false }),
       signWeek: () => {
         const ws = Object.assign({}, st.weekSigned); ws[A0.room] = { by: st.sig, at: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + this.nowTime() };
-        const row = { date: today, period: 'Weekly MDE 5-day check-off sheet', room: A0.room, present: ROSTER.length + ' students', breakdown: (dayTotals.reduce((a, b) => a + b, 0)) + ' reimbursable meals checked off this week', by: st.sig, time: this.nowTime() };
+        const sl2 = this.seal(A0.email + '|week|' + today + '|' + this.nowTime());
+        const row = { date: today, period: 'Weekly MDE 5-day check-off sheet', room: A0.room, present: ROSTER.length + ' students', breakdown: (dayTotals.reduce((a, b) => a + b, 0)) + ' reimbursable meals checked off this week', by: st.sig + ' · ' + sl2.id, time: this.nowTime() };
         this.setState({ weekSigned: ws, weekOpen: false, subsNew: [row].concat(st.subsNew) });
         this.log('Signed weekly MDE check-off sheet · ' + A0.room);
         this.showToast('Weekly check-off sheet signed, dated and sent to Brian Corbett');
@@ -2886,9 +2964,10 @@ class Component extends DCLogic {
       doneLate: !!lateSub, doneLateAt: lateSub || '',
       lockedText: amended ? 'Updated count signed and sent.' : lateSub ? 'Submitted late at ' + lateSub + ' and signed. Food Service and the kitchen were alerted.' : (isGSRP ? 'Attendance submitted — the kitchen is preparing the meal and snack.' : 'Morning count submitted and signed.'),
       amend: () => { const s2 = Object.assign({}, st.submitted); delete s2[RK]; const am = Object.assign({}, st.amended); am[RK] = true; this.setState({ submitted: s2, amended: am }); },
-      openModal: () => this.setState({ modal: true, sig: '', agree: false }),
+      openModal: () => this.setState({ modal: true, sig: '', agree: false, esign: false }),
       closeModal: () => this.setState({ modal: false }),
-      sig: st.sig, agree: st.agree,
+      sig: st.sig, agree: st.agree, esign: !!st.esign, onEsign: (e) => this.setState({ esign: e.target.checked }),
+      sigMismatch: st.sig.trim().length >= 3 && !sigOk, signerEmail: A0.email, lastSigId: (st.lastSig || {}).id || '', lastSigHash: (st.lastSig || {}).hash || '',
       onSig: (e) => this.setState({ sig: e.target.value }),
       onAgree: (e) => this.setState({ agree: e.target.checked }),
       cantSign,
@@ -2897,9 +2976,10 @@ class Component extends DCLogic {
         const s2 = Object.assign({}, st.submitted); s2[RK] = true;
         const lt2 = Object.assign({}, st.late || {}); ROSTER.forEach((x) => { if (lt2[x.sid]) lt2[x.sid] = Object.assign({}, lt2[x.sid], { sent: true }); });
         const subLate = late && !amended, tNow = this.nowTime();
+        const sealRec = this.seal(A0.email + '|' + RK + '|' + today + '|' + tNow + '|' + JSON.stringify(mealSummary));
         const row = { date: today, period: (amended ? 'Updated · ' : '') + (subLate ? 'Submitted late · ' : '') + (isGSRP ? 'GSRP morning attendance' : 'Breakfast check-off & sign-ups'), room: A0.room, present: present + ' of ' + ROSTER.length, breakdown: mealSummary.map((m) => m.label + ': ' + m.text).join(' | '), by: st.sig, time: this.nowTime() };
         const ls = Object.assign({}, st.lateSub); if (subLate) ls[RK] = tNow;
-        this.setState({ submitted: s2, late: lt2, modal: false, done: true, lateSub: ls, subsNew: [row].concat(st.subsNew) });
+        row.by = st.sig + ' · ' + sealRec.id; this.setState({ submitted: s2, late: lt2, modal: false, done: true, lateSub: ls, lastSig: sealRec, subsNew: [row].concat(st.subsNew) });
         if (subLate) this.pushAlert({ headline: 'Late count from ' + A0.school + ' · ' + A0.room + ' (' + tNow + ')', detail: mealSummary.map((m) => m.label + ': ' + m.text).join(' · '), who: A0.name });
         this.log('Signed 9:00 AM count · ' + A0.room);
         if (amended) this.pushAlert({ headline: 'Corrected count from ' + A0.school + ' · ' + A0.room, detail: mealSummary.map((m) => m.label + ': ' + m.text).join(' · '), who: A0.name });
