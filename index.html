@@ -597,9 +597,18 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 <sc-for list="{{p.guardians}}" as="g" hint-placeholder-count="2">
 <div style="display: flex; justify-content: space-between; gap: 8px; padding: 8px 0; border-top: 1px solid #EEF2F6; font-size: 14px">
 <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600">{{g.name}}</span><span style="font-size: 12px; color: #475569">{{g.rel}}</span></div>
-<span style="color: #334155">{{g.phone}}</span>
+<div style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px"><span style="color: #334155">{{g.phone}}</span><span style="font-size: 12px; color: #475569">{{g.email}}</span></div>
 </div>
 </sc-for>
+<div style="display: flex; flex-direction: column; gap: 6px; padding-top: 8px; border-top: 1px solid #EEF2F6; font-size: 14px">
+<span style="color: #475569">Family {{p.household}}</span>
+<sc-if value="{{p.hasSiblings}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; gap: 6px"><span style="color: #475569">Siblings:</span>
+<sc-for list="{{p.siblings}}" as="sb" hint-placeholder-count="1"><button type="button" onClick="{{sb.open}}" style="border: 0; background: none; padding: 0; color: #0A6E8C; font-size: 14px; font-weight: 600; text-decoration: underline; cursor: pointer">{{sb.name}} ({{sb.where}})</button></sc-for>
+</div>
+</sc-if>
+<sc-if value="{{p.noSiblings}}" hint-placeholder-val="{{ true }}"><span style="color: #475569">No siblings at Beacon or Tyrone.</span></sc-if>
+</div>
 </section>
 <section style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 10px">
 <h2 style="margin: 0; font-size: 16px">Programs</h2>
@@ -1811,8 +1820,31 @@ input:focus-visible,button:focus-visible,a:focus-visible,select:focus-visible{ou
 </div></div>
 <div style="display: flex; flex-direction: column; gap: 6px"><label for="sf-allergy" style="font-size: 13px; font-weight: 600">Allergies</label><input id="sf-allergy" type="text" value="{{f.allergy}}" onChange="{{fOn.allergy}}" placeholder="e.g. Peanut allergy" style="height: 44px; padding: 0 12px; border: 1px solid #CBD5E1; border-radius: 10px; font-size: 15px; color: #0F172A"></div>
 <div style="display: flex; flex-direction: column; gap: 6px"><label for="sf-diet" style="font-size: 13px; font-weight: 600">Diet</label><select id="sf-diet" value="{{f.diet}}" onChange="{{fOn.diet}}" style="height: 44px; padding: 0 10px; border: 1px solid #CBD5E1; border-radius: 10px; font: inherit; font-size: 15px; background: #FFFFFF; color: #0F172A"><option value="Standard">Standard</option><option value="Vegetarian">Vegetarian</option><option value="Lactose-free">Lactose-free</option><option value="Halal">Halal</option><option value="Gluten-free">Gluten-free</option></select></div>
-<div style="display: flex; flex-direction: column; gap: 6px"><label for="sf-guard" style="font-size: 13px; font-weight: 600">Parent / guardian *</label><input id="sf-guard" type="text" value="{{f.guardian}}" onChange="{{fOn.guardian}}" style="height: 44px; padding: 0 12px; border: 1px solid #CBD5E1; border-radius: 10px; font-size: 15px; color: #0F172A"></div>
-<div style="display: flex; flex-direction: column; gap: 6px"><label for="sf-phone" style="font-size: 13px; font-weight: 600">Guardian phone</label><input id="sf-phone" type="tel" value="{{f.phone}}" onChange="{{fOn.phone}}" placeholder="(313) 555-0100" style="height: 44px; padding: 0 12px; border: 1px solid #CBD5E1; border-radius: 10px; font-size: 15px; color: #0F172A"></div>
+<div style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid #E2E8F0; border-radius: 12px; background: #F8FAFC">
+<span style="font-size: 13px; font-weight: 700">Family</span>
+<sc-if value="{{famLinked}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; border-radius: 10px; background: #ECFDF3; border: 1px solid #ABEFC6; color: #085D3A; font-size: 14px">
+<span><strong>Linked to {{famLabel}}.</strong> {{famSiblings}} The guardian is shared, not copied.</span>
+<button type="button" onClick="{{famUnlink}}" style="border: 0; background: none; color: #085D3A; font-size: 13px; font-weight: 600; text-decoration: underline; cursor: pointer; padding: 4px">Unlink</button>
+</div>
+</sc-if>
+<sc-if value="{{famNotLinked}}" hint-placeholder-val="{{ true }}">
+<label for="sf-fam" style="font-size: 13px; color: #475569">Has a brother or sister at school? Link to the existing family by guardian name or phone.</label>
+<input id="sf-fam" type="search" value="{{famQ}}" onChange="{{onFamQ}}" placeholder="Search guardian name or phone" style="height: 44px; padding: 0 12px; border: 1px solid #CBD5E1; border-radius: 10px; font-size: 15px; color: #0F172A">
+<sc-for list="{{famHits}}" as="h" hint-placeholder-count="2">
+<button type="button" onClick="{{h.pick}}" style="display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 12px; border: 1px solid #CBD5E1; border-radius: 10px; background: #FFFFFF; text-align: left; cursor: pointer"><span style="font-weight: 700; font-size: 14px; color: #0F172A">{{h.guardian}} · {{h.phone}}</span><span style="font-size: 12px; color: #475569">{{h.kids}}</span></button>
+</sc-for>
+<sc-if value="{{famPhoneMatch}}" hint-placeholder-val="{{ false }}">
+<div role="alert" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 10px; background: #FFF4E5; border: 1px solid #FBD38D; color: #7A3E00; font-size: 13px">
+<span style="flex: 1 1 240px">This phone already belongs to <strong>{{famMatchName}}</strong> ({{famMatchKids}}). Link instead of creating a second parent record?</span>
+<button type="button" onClick="{{famLinkMatch}}" style="height: 36px; padding: 0 12px; border-radius: 9px; border: 1.5px solid #7A3E00; background: #FFFFFF; color: #7A3E00; font-weight: 700; font-size: 13px; cursor: pointer">Link family</button>
+</div>
+</sc-if>
+</sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px"><label for="sf-guard" style="font-size: 13px; font-weight: 600">Parent / guardian *</label><input id="sf-guard" type="text" value="{{f.guardian}}" onChange="{{fOn.guardian}}" readonly="{{famLinked}}" style="height: 44px; padding: 0 12px; border: 1px solid #CBD5E1; border-radius: 10px; font-size: 15px; color: #0F172A"></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><label for="sf-phone" style="font-size: 13px; font-weight: 600">Guardian mobile * (form link is texted)</label><input id="sf-phone" type="tel" value="{{f.phone}}" onChange="{{fOn.phone}}" readonly="{{famLinked}}" placeholder="(313) 555-0100" style="height: 44px; padding: 0 12px; border: 1px solid #CBD5E1; border-radius: 10px; font-size: 15px; color: #0F172A"></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><label for="sf-email" style="font-size: 13px; font-weight: 600">Guardian email (optional)</label><input id="sf-email" type="email" value="{{f.email}}" onChange="{{fOn.email}}" readonly="{{famLinked}}" placeholder="name@example.com" style="height: 44px; padding: 0 12px; border: 1px solid #CBD5E1; border-radius: 10px; font-size: 15px; color: #0F172A"></div>
 <div style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px"><span style="font-size: 13px; font-weight: 600">Enrichment programs</span>
 <div style="display: flex; flex-wrap: wrap; gap: 8px">
 <sc-for list="{{progChips}}" as="c" hint-placeholder-count="4"><button type="button" aria-pressed="{{c.on}}" onClick="{{c.toggle}}" style="height: 40px; padding: 0 14px; border-radius: 999px; border: 1.5px solid; font-size: 13px; font-weight: 600; cursor: pointer; {{c.style}}">{{c.label}}</button></sc-for>
@@ -2251,7 +2283,7 @@ class Component extends DCLogic {
       ['ava', 'Ava', 'Thompson', '20021063', 'Beacon', 'Room 205', 'Grade 2', 'Free', '', 'Standard', 'Nicole Thompson', [], false],
       ['nia', 'Nia', 'Washington', '20019912', 'Beacon', 'Room 205', 'Grade 2', 'Free', '', 'Standard', 'Erica Washington', ['Art Studio', 'Tutoring'], true],
       ['amari', 'Amari', 'Jones', '20030112', 'Beacon', 'Room 101', 'GSRP Pre-K', 'Free', '', 'Standard', 'Tiffany Jones', [], true],
-      ['sofia', 'Sofia', 'Lopez', '20030145', 'Beacon', 'Room 101', 'GSRP Pre-K', 'Free', 'Egg allergy', 'Standard', 'Maria Lopez', [], false],
+      ['sofia', 'Sofia', 'Ramirez', '20030145', 'Beacon', 'Room 101', 'GSRP Pre-K', 'Free', 'Egg allergy', 'Standard', 'Lucia Ramirez', [], false],
       ['jayden', 'Jayden', 'Price', '20030177', 'Beacon', 'Room 101', 'GSRP Pre-K', 'Free', '', 'Standard', 'Andre Price', [], true],
       ['imani', 'Imani', 'Davis', '20027310', 'Tyrone', 'Room 210', 'Grade 1', 'Free', '', 'Standard', 'Crystal Davis', ['Power Hour'], true],
       ['lucas', 'Lucas', 'Martin', '20027342', 'Tyrone', 'Room 210', 'Grade 1', 'Paid', '', 'Standard', 'Jason Martin', ['Power Hour'], false],
@@ -2264,6 +2296,12 @@ class Component extends DCLogic {
       elig: r[7], allergy: r[8], diet: r[9], guardian: r[10], programs: r[11], latchkey: r[12], photoKey: r[0], upload: null, idx: i,
       phone: '(313) 555-01' + String(10 + i)
     }));
+    // Households (Dev Q, Nov 25): siblings share one household / guardian record, never duplicated.
+    const HH = {};
+    this.ALL.forEach((s) => {
+      if (!HH[s.guardian]) HH[s.guardian] = { id: 'HH-' + String(1001 + Object.keys(HH).length), guardian: s.guardian, phone: s.phone, email: s.guardian.toLowerCase().replace(/[^a-z ]/g, '').trim().replace(/ +/g, '.') + '@gmail.com' };
+      const h = HH[s.guardian]; s.household = h.id; s.phone = h.phone; s.email = h.email;
+    });
     this.ROOM205 = this.ALL.filter((s) => s.room === 'Room 205');
     // Parents who opted out of the photo release: show initials instead of a picture.
     this.ALL.forEach((s) => { if (s.key === 'caleb' || s.key === 'lucas') s.photoOptOut = true; });
@@ -2461,10 +2499,18 @@ class Component extends DCLogic {
     const f = st.form || {};
     const setF = (patch) => this.setState({ form: Object.assign({}, st.form, patch), formErr: '' });
     const fOn = {};
-    ['first', 'last', 'sid', 'allergy', 'diet', 'guardian', 'phone', 'room'].forEach((k) => { fOn[k] = (e) => setF({ [k]: e.target.value }); });
+    ['first', 'last', 'sid', 'allergy', 'diet', 'guardian', 'phone', 'email', 'room'].forEach((k) => { fOn[k] = (e) => setF({ [k]: e.target.value }); });
     fOn.school = (e) => { const sch = e.target.value; const first = this.roomsAll().find((r) => r[0] === sch); setF({ school: sch, room: first ? first[1] : '' }); };
     const ON = 'background:#E6F6FA;color:#074F66;border-color:#0A6E8C', OFF = 'background:#FFFFFF;color:#334155;border-color:#CBD5E1';
     const prof = this.all().find((x) => x.sid === st.profileId);
+    // Families: one household per guardian, shared by siblings
+    const fams = {}; this.all().forEach((x) => { if (!x.household) return; const h = fams[x.household] || (fams[x.household] = { id: x.household, guardian: x.guardian, phone: x.phone, email: x.email || '', kids: [] }); if (x.sid !== f.sid) h.kids.push(x.first + ' ' + x.last + ' (' + x.school + ' · ' + x.room + ')'); });
+    const famList = Object.values(fams);
+    const digits = (v) => (v || '').replace(/\D/g, '');
+    const linkFam = (h) => setF({ household: h.id, guardian: h.guardian, phone: h.phone, email: h.email });
+    const fq = (st.famQ || '').trim().toLowerCase();
+    const curFam = f.household ? fams[f.household] : null;
+    const phoneMatch = !f.household && digits(f.phone).length >= 10 ? famList.find((h) => digits(h.phone) === digits(f.phone)) : null;
     const ctxKey = st.formMode ? f.photoKey : (prof ? prof.photoKey : null);
     const applyPhoto = (patch) => {
       if (st.formMode) { setF(patch); return; }
@@ -2495,6 +2541,12 @@ class Component extends DCLogic {
     return {
       formOpen: !!st.formMode, formTitle: st.formMode === 'edit' ? 'Edit profile · ' + (f.first || '') + ' ' + (f.last || '') : 'Add student',
       formSave: st.formMode === 'edit' ? 'Save changes' : 'Add student', formErr: st.formErr,
+      famLinked: !!curFam, famNotLinked: !curFam, famLabel: curFam ? curFam.guardian + "'s family (" + curFam.id + ')' : '',
+      famSiblings: curFam ? (curFam.kids.length ? 'Siblings: ' + curFam.kids.join(', ') + '.' : '') : '',
+      famUnlink: () => setF({ household: null }),
+      famQ: st.famQ || '', onFamQ: (e) => this.setState({ famQ: e.target.value }),
+      famHits: fq.length >= 2 ? famList.filter((h) => h.guardian.toLowerCase().indexOf(fq) >= 0 || (digits(fq).length >= 3 && digits(h.phone).indexOf(digits(fq)) >= 0)).slice(0, 4).map((h) => ({ guardian: h.guardian, phone: h.phone, kids: h.kids.length ? 'Children: ' + h.kids.join(', ') : 'No other children', pick: () => { linkFam(h); this.setState({ famQ: '' }); } })) : [],
+      famPhoneMatch: !!phoneMatch, famMatchName: phoneMatch ? phoneMatch.guardian : '', famMatchKids: phoneMatch ? phoneMatch.kids.join(', ') : '', famLinkMatch: () => { if (phoneMatch) linkFam(phoneMatch); },
       sidLocked: st.formMode === 'edit',
       f, fOn, fp: this.pv(f),
       roomOpts: this.roomsAll().filter((r) => r[0] === (f.school || 'Beacon')).map((r) => ({ v: r[1], label: r[1] + ' · ' + r[2] })),
@@ -2508,13 +2560,16 @@ class Component extends DCLogic {
         if (!first || !last) { this.setState({ formErr: 'Enter the student\'s first and last name.' }); return; }
         if (!/^\d{6,10}$/.test(sid)) { this.setState({ formErr: 'Student ID must be 6–10 digits.' }); return; }
         if (!(f.guardian || '').trim()) { this.setState({ formErr: 'Add at least one parent or guardian.' }); return; }
-        const data = { first, last, sid, school: f.school, room: f.room, grade: this.gradeFor(f.school, f.room), elig: f.elig, allergy: (f.allergy || '').trim(), diet: f.diet, guardian: f.guardian.trim(), phone: f.phone || '(313) 555-0100', programs: f.programs || [], latchkey: !!f.latchkey, photoOptOut: !!f.photoOptOut, photoKey: f.photoKey || null, upload: f.upload || null };
+        if (digits(f.phone).length < 10) { this.setState({ formErr: 'Add the guardian\'s mobile number. The benefit-form link is sent by text.' }); return; }
+        if ((f.email || '').trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email.trim())) { this.setState({ formErr: 'Check the guardian email address.' }); return; }
+        if (!f.household && phoneMatch) { this.setState({ formErr: 'This mobile already belongs to ' + phoneMatch.guardian + '. Link the family instead of creating a duplicate parent.' }); return; }
+        const data = { first, last, sid, school: f.school, room: f.room, grade: this.gradeFor(f.school, f.room), elig: f.elig, allergy: (f.allergy || '').trim(), diet: f.diet, guardian: f.guardian.trim(), phone: f.phone, email: (f.email || '').trim(), household: f.household || ('HH-' + String(1100 + st.extra.length)), programs: f.programs || [], latchkey: !!f.latchkey, photoOptOut: !!f.photoOptOut, photoKey: f.photoKey || null, upload: f.upload || null };
         if (st.formMode === 'add') {
           if (this.all().some((s) => s.sid === sid)) { this.setState({ formErr: 'That student ID already exists.' }); return; }
           const s = Object.assign({ key: 'new' + sid, idx: 200 + st.extra.length }, data);
           this.setState({ extra: st.extra.concat([s]), formMode: null, form: null, profileId: sid, back: 'students', screen: 'profile' });
           this.log('Added student ' + first + ' ' + last + ' · ' + data.room);
-          this.showToast(first + ' ' + last + ' added to ' + data.room + ' · ' + data.school);
+          this.showToast(first + ' ' + last + ' added to ' + data.room + (f.household ? ' · linked to ' + data.guardian + "'s family" : ' · new family ' + data.household));
         } else {
           const over = Object.assign({}, st.over); over[sid] = Object.assign({}, over[sid], data);
           this.setState({ over, formMode: null, form: null });
@@ -2522,8 +2577,8 @@ class Component extends DCLogic {
           this.showToast('Profile saved for ' + first + ' ' + last);
         }
       },
-      openAdd: () => this.setState({ formMode: 'add', formErr: '', form: { first: '', last: '', sid: String(20031300 + st.extra.length * 7), school: 'Beacon', room: 'Room 205', elig: 'Free', allergy: '', diet: 'Standard', guardian: '', phone: '', programs: [], latchkey: false, photoOptOut: false, photoKey: null, upload: null } }),
-      openEdit: () => { if (prof) this.setState({ formMode: 'edit', formErr: '', form: { first: prof.first, last: prof.last, sid: prof.sid, school: prof.school, room: prof.room, elig: prof.elig, allergy: prof.allergy, diet: prof.diet, guardian: prof.guardian, phone: prof.phone, programs: prof.programs.slice(), latchkey: prof.latchkey, photoOptOut: !!prof.photoOptOut, photoKey: prof.photoKey, upload: prof.upload } }); },
+      openAdd: () => this.setState({ formMode: 'add', formErr: '', form: { first: '', last: '', sid: String(20031300 + st.extra.length * 7), school: 'Beacon', room: 'Room 205', elig: 'Free', allergy: '', diet: 'Standard', guardian: '', phone: '', email: '', household: null, programs: [], latchkey: false, photoOptOut: false, photoKey: null, upload: null }, famQ: '' }),
+      openEdit: () => { if (prof) this.setState({ formMode: 'edit', formErr: '', form: { first: prof.first, last: prof.last, sid: prof.sid, school: prof.school, room: prof.room, elig: prof.elig, allergy: prof.allergy, diet: prof.diet, guardian: prof.guardian, phone: prof.phone, email: prof.email || '', household: prof.household || null, programs: prof.programs.slice(), latchkey: prof.latchkey, photoOptOut: !!prof.photoOptOut, photoKey: prof.photoKey, upload: prof.upload } }); },
       toggleOptOut: () => setF({ photoOptOut: !f.photoOptOut }),
       optOutTrack: f.photoOptOut ? 'background:#0A6E8C;justify-content:flex-end' : 'background:#CBD5E1;justify-content:flex-start',
       avatars, onUpload,
@@ -3118,7 +3173,10 @@ class Component extends DCLogic {
       p: {
         name: s.name, sid: s.sid, ...this.pv(s), room: s.room, grade: s.grade, school: s.school, elig: s.elig,
         hasAllergy: !!s.allergy, noAllergy: !s.allergy, allergy: s.allergy, diet: s.diet,
-        guardians: [{ name: s.guardian, rel: 'Parent / guardian · authorized pick-up', phone: s.phone }, { name: 'Emergency contact on file', rel: 'Authorized pick-up', phone: '(313) 555-0199' }],
+        guardians: [{ name: s.guardian, rel: 'Parent / guardian · authorized pick-up', phone: s.phone, email: s.email || 'No email on file' }, { name: 'Emergency contact on file', rel: 'Authorized pick-up', phone: '(313) 555-0199', email: '' }],
+        household: s.household || '—',
+        siblings: this.all().filter((x) => x.household && x.household === s.household && x.sid !== s.sid).map((x) => ({ name: x.first + ' ' + x.last, where: x.school + ' · ' + x.room, open: () => this.setState({ profileId: x.sid }) })),
+        hasSiblings: this.all().some((x) => x.household && x.household === s.household && x.sid !== s.sid), noSiblings: !this.all().some((x) => x.household && x.household === s.household && x.sid !== s.sid),
         programs: s.programs, noPrograms: !s.programs.length,
         latch: s.latchkey ? 'Enrolled · Mon–Fri' : 'Not enrolled',
         optOut: !!s.photoOptOut,
